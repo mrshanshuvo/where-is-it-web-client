@@ -3,7 +3,7 @@ import signInLottie from '../../assets/lotties/signIn.json';
 import Lottie from 'lottie-react';
 import SocialLogin from '../Shared/SocialLogin';
 import { useLocation, useNavigate } from 'react-router';
-import { AuthContext } from '../../contexts/AuthContext';
+import { AuthContext } from '../../contexts/AuthContext/AuthContext';
 
 const SignIn = () => {
   const { signInUser } = useContext(AuthContext);

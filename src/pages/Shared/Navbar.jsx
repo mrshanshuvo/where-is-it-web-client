@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { NavLink } from 'react-router';
-import { AuthContext } from '../../contexts/AuthContext';
 import { FaHome, FaSearch, FaPlus, FaUser, FaSignOutAlt, FaLock } from 'react-icons/fa';
+import { AuthContext } from '../../contexts/AuthContext/AuthContext';
 
 const Navbar = () => {
   const { user, signOutUser } = useContext(AuthContext);

@@ -8,7 +8,7 @@ import {
   signInWithPopup,
   signOut,
 } from "firebase/auth";
-import { auth } from "../firebase/firebase.config";
+import { auth } from "../../firebase/firebase.config";
 import axios from "axios";
 
 const googleProvider = new GoogleAuthProvider();
