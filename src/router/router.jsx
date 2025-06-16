@@ -1,70 +1,115 @@
 import { createBrowserRouter } from "react-router";
 import RootLayout from "../layouts/RootLayout";
 import Home from "../pages/Home/Home";
-import Register from "../pages/Register/Register";
-import SignIn from "../pages/SignIn/SignIn";
-import JobDetails from "../pages/JobDetails/JobDetails";
+import Register from "../pages/Auth/Register";
+import SignIn from "../pages/Auth/SignIn";
+import ItemDetails from "../pages/Items/ItemDetails";
 import PrivateRoute from "./PrivateRoute";
-import JobApply from "../pages/JobApply/JobApply";
-import MyApplications from "../pages/MyApplications/MyApplications";
-import AddJob from "../pages/AddJob/AddJob";
-import MyPostedJobs from "../pages/MyPostedJobs/MyPostedJobs";
-import ViewApplcations from "../pages/ViewApplications/ViewApplcations";
+import ReportItem from "../pages/Items/ReportItem";
+import MyItems from "../pages/User/MyItems";
+import RecoveredItems from "../pages/User/RecoveredItems";
+import ManageItems from "../pages/User/ManageItems";
+import UserProfile from "../pages/User/Profile";  // Added import
+import LostItems from "../pages/Items/LostItems";
+import FoundItems from "../pages/Items/FoundItems";
+import AdminDashboard from "../pages/Admin/AdminDashboard";
+import ReportedItems from "../pages/Admin/ReportedItems";
+import NotFound from "../pages/Shared/NotFound";
 
 const router = createBrowserRouter([
   {
     path: "/",
     Component: RootLayout,
+    errorElement: <NotFound />,
     children: [
       { index: true, Component: Home },
       { path: "register", Component: Register },
-      { path: "signIn", Component: SignIn },
+      { path: "sign-in", Component: SignIn },
+
+      // Public item routes
       {
-        path: "/jobs/:id",
-        Component: JobDetails,
+        path: "lost-items",
+        Component: LostItems,
+        loader: () =>
+          fetch(`${import.meta.env.VITE_API_URL}/items?type=lost&status=active`),
+      },
+      {
+        path: "found-items",
+        Component: FoundItems,
+        loader: () =>
+          fetch(`${import.meta.env.VITE_API_URL}/items?type=found&status=active`),
+      },
+      {
+        path: "items/:id",
+        Component: ItemDetails,
         loader: ({ params }) =>
-          fetch(`http://localhost:5000/jobs/${params.id}`),
+          fetch(`${import.meta.env.VITE_API_URL}/items/${params.id}`),
       },
+
+      // User protected routes
       {
-        path: "jobApply/:id",
+        path: "report-item",
         element: (
           <PrivateRoute>
-            <JobApply></JobApply>
+            <ReportItem />
           </PrivateRoute>
         ),
       },
       {
-        path: "myApplications",
+        path: "my-items",
         element: (
           <PrivateRoute>
-            <MyApplications></MyApplications>
+            <MyItems />
+          </PrivateRoute>
+        ),
+        loader: () => {
+          const user = JSON.parse(localStorage.getItem("user"));
+          if (!user) throw new Response("Unauthorized", { status: 401 });
+          return fetch(`${import.meta.env.VITE_API_URL}/items/user/${user.uid}`);
+        },
+      },
+      {
+        path: "recovered-items",
+        element: (
+          <PrivateRoute>
+            <RecoveredItems />
           </PrivateRoute>
         ),
       },
       {
-        path: "addJob",
+        path: "manage-items",
         element: (
           <PrivateRoute>
-            <AddJob></AddJob>
+            <ManageItems />
           </PrivateRoute>
         ),
       },
       {
-        path: "myPostedJobs",
+        path: "profile",
         element: (
           <PrivateRoute>
-            <MyPostedJobs></MyPostedJobs>
+            <UserProfile />
+          </PrivateRoute>
+        ),
+      },
+
+      // Admin protected routes
+      {
+        path: "admin/dashboard",
+        element: (
+          <PrivateRoute adminOnly={true}>
+            <AdminDashboard />
           </PrivateRoute>
         ),
       },
       {
-        path: 'applications/:job_id',
-        element:
-          <PrivateRoute>
-            <ViewApplcations></ViewApplcations>
-          </PrivateRoute>,
-        loader: ({ params }) => fetch(`http://localhost:5000/applications/job/${params.job_id}`)
-      }
+        path: "admin/reported-items",
+        element: (
+          <PrivateRoute adminOnly={true}>
+            <ReportedItems />
+          </PrivateRoute>
+        ),
+      },
     ],
   },
 ]);

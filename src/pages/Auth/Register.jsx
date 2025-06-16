@@ -1,7 +1,7 @@
 import Lottie from 'lottie-react';
 import registerLottie from '../../assets/lotties/register.json'
 import { use } from 'react';
-import { AuthContext } from '../../contexts/AuthContext/AuthContext';
+import { AuthContext } from '../../contexts/AuthContext';
 import SocialLogin from '../Shared/SocialLogin';
 
 const Register = () => {

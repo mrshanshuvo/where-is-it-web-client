@@ -1,13 +1,9 @@
 import React, { Suspense } from "react";
-import HotJobs from "./HotJobs";
 import { ClipLoader } from "react-spinners";
 import BannerSlider from "./BannerSlider";
+import LatestItemsSection from "./LatestItemsSection";
 
 const Home = () => {
-  const jobsPromise = fetch("http://localhost:5000/jobs").then((res) =>
-    res.json()
-  );
-
   return (
     <div className="max-w-7xl mx-auto">
       <BannerSlider></BannerSlider>
@@ -18,7 +14,7 @@ const Home = () => {
           </div>
         }
       >
-        <HotJobs jobsPromise={jobsPromise} />
+        <LatestItemsSection></LatestItemsSection>
       </Suspense>
     </div>
   );
