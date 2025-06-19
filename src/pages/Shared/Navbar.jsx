@@ -25,13 +25,7 @@ const Navbar = () => {
       <li>
         <NavLink to='/lost-items' onClick={() => setDropdownOpen(false)} className="flex items-center gap-2">
           <FaSearch className="text-lg" />
-          Lost Items
-        </NavLink>
-      </li>
-      <li>
-        <NavLink to='/found-items' onClick={() => setDropdownOpen(false)} className="flex items-center gap-2">
-          <FaSearch className="text-lg" />
-          Found Items
+          Lost & Found Items
         </NavLink>
       </li>
       {user && (
@@ -127,13 +121,10 @@ const Navbar = () => {
               <span className="hidden sm:inline">Report Item</span>
             </NavLink>
 
-            <div className="dropdown dropdown-end">
+            <div className="relative">
               <div
-                tabIndex={0}
                 role="button"
                 className="avatar placeholder hover:opacity-80 transition-opacity"
-                onMouseEnter={() => setProfileDropdownOpen(true)}
-                onMouseLeave={() => setProfileDropdownOpen(false)}
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
               >
                 <div className="bg-blue-100 text-blue-800 rounded-full w-10 h-10 flex items-center justify-center">
@@ -151,62 +142,57 @@ const Navbar = () => {
                   )}
                 </div>
               </div>
-              <ul
-                tabIndex={0}
-                className={`dropdown-content z-[1] menu p-2 shadow-lg bg-white rounded-box w-52 mt-2 ${profileDropdownOpen ? 'block' : 'hidden'}`}
-                onMouseEnter={() => setProfileDropdownOpen(true)}
-                onMouseLeave={() => setProfileDropdownOpen(false)}
-              >
-                <li className="px-4 py-2 border-b border-gray-100">
-                  <div className="font-medium text-gray-900 truncate">
-                    {user.displayName || "User"}
-                  </div>
-                  <div className="text-sm text-gray-500 truncate">
-                    {user.email}
-                  </div>
-                </li>
-                <li>
-                  <NavLink to="/profile" className="flex items-center gap-2">
-                    <FaUser />
-                    My Profile
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/add-item" className="flex items-center gap-2">
-                    <FaPlus />
-                    Add New Item
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/manage-items" className="flex items-center gap-2">
-                    <FaLock />
-                    Manage My Items
-                  </NavLink>
-                </li>
-                <li className="border-t border-gray-100 mt-1">
-                  <button
-                    onClick={handleSignOut}
-                    className="flex items-center gap-2 text-red-600 hover:bg-red-50 w-full px-4 py-2"
-                  >
-                    <FaSignOutAlt />
-                    Sign Out
-                  </button>
-                </li>
-              </ul>
+
+              {profileDropdownOpen && (
+                <ul className="absolute right-0 mt-2 z-10 w-52 menu bg-white p-2 shadow-lg rounded-box">
+                  <li className="px-4 py-2 border-b border-gray-100">
+                    <div className="font-medium text-gray-900 truncate">
+                      {user.displayName || "User"}
+                    </div>
+                    <div className="text-sm text-gray-500 truncate">
+                      {user.email}
+                    </div>
+                  </li>
+                  <li>
+                    <NavLink to="/profile" onClick={() => setProfileDropdownOpen(false)} className="flex items-center gap-2">
+                      <FaUser />
+                      My Profile
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink to="/add-item" onClick={() => setProfileDropdownOpen(false)} className="flex items-center gap-2">
+                      <FaPlus />
+                      Add New Item
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink to="/manage-items" onClick={() => setProfileDropdownOpen(false)} className="flex items-center gap-2">
+                      <FaLock />
+                      Manage My Items
+                    </NavLink>
+                  </li>
+                  <li className="border-t border-gray-100 mt-1">
+                    <button
+                      onClick={() => {
+                        setProfileDropdownOpen(false);
+                        handleSignOut();
+                      }}
+                      className="flex items-center gap-2 text-red-600 hover:bg-red-50 w-full px-4 py-2"
+                    >
+                      <FaSignOutAlt />
+                      Sign Out
+                    </button>
+                  </li>
+                </ul>
+              )}
             </div>
           </>
         ) : (
           <>
-            <NavLink
-              className="btn btn-ghost btn-sm md:btn-md"
-              to="/register"
-            >
+            <NavLink className="btn btn-ghost btn-sm md:btn-md" to="/register">
               Register
             </NavLink>
-            <NavLink
-              className="btn btn-primary btn-sm md:btn-md"
-              to="/signIn"
-            >
+            <NavLink className="btn btn-primary btn-sm md:btn-md" to="/sign-in">
               Sign In
             </NavLink>
           </>

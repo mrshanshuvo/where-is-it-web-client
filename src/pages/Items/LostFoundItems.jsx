@@ -1,6 +1,6 @@
 import React from 'react';
 
-const FoundItems = () => {
+const LostFoundItems = () => {
   return (
     <div>
 
@@ -8,4 +8,4 @@ const FoundItems = () => {
   );
 };
 
-export default FoundItems;
+export default LostFoundItems;

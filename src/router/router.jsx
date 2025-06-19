@@ -9,12 +9,11 @@ import ReportItem from "../pages/Items/ReportItem";
 import MyItems from "../pages/User/MyItems";
 import RecoveredItems from "../pages/User/RecoveredItems";
 import ManageItems from "../pages/User/ManageItems";
-import UserProfile from "../pages/User/Profile";  // Added import
-import LostItems from "../pages/Items/LostItems";
-import FoundItems from "../pages/Items/FoundItems";
+import UserProfile from "../pages/User/Profile";
 import AdminDashboard from "../pages/Admin/AdminDashboard";
 import ReportedItems from "../pages/Admin/ReportedItems";
 import NotFound from "../pages/Shared/NotFound";
+import LostFoundItems from "../pages/Items/LostFoundItems";
 
 const router = createBrowserRouter([
   {
@@ -28,16 +27,10 @@ const router = createBrowserRouter([
 
       // Public item routes
       {
-        path: "lost-items",
-        Component: LostItems,
+        path: "lost-found-items",
+        Component: LostFoundItems,
         loader: () =>
           fetch(`${import.meta.env.VITE_API_URL}/items?type=lost&status=active`),
-      },
-      {
-        path: "found-items",
-        Component: FoundItems,
-        loader: () =>
-          fetch(`${import.meta.env.VITE_API_URL}/items?type=found&status=active`),
       },
       {
         path: "items/:id",
