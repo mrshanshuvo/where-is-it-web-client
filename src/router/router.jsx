@@ -9,11 +9,13 @@ import ReportItem from "../pages/Items/ReportItem";
 import MyItems from "../pages/User/MyItems";
 import RecoveredItems from "../pages/User/RecoveredItems";
 import ManageItems from "../pages/User/ManageItems";
-import UserProfile from "../pages/User/Profile";
 import AdminDashboard from "../pages/Admin/AdminDashboard";
 import ReportedItems from "../pages/Admin/ReportedItems";
 import NotFound from "../pages/Shared/NotFound";
 import LostFoundItems from "../pages/Items/LostFoundItems";
+import AddItems from "../pages/Items/AddItems";
+import { auth } from "../firebase/firebase.config";
+import MyProfile from "../pages/User/MyProfile";
 
 const router = createBrowserRouter([
   {
@@ -40,6 +42,14 @@ const router = createBrowserRouter([
       },
 
       // User protected routes
+      {
+        path: "add-items",
+        element: (
+          <PrivateRoute>
+            <AddItems />
+          </PrivateRoute>
+        ),
+      },
       {
         path: "report-item",
         element: (
@@ -78,12 +88,24 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "profile",
+        path: "my-profile",
         element: (
           <PrivateRoute>
-            <UserProfile />
+            <MyProfile />
           </PrivateRoute>
         ),
+        loader: async () => {
+          const user = auth.currentUser;
+          if (!user) throw new Error("Unauthorized");
+          const token = await user.getIdToken();
+          const response = await fetch(`http://localhost:5000/api/users/${user.uid}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          if (!response.ok) throw new Error("Failed to fetch profile");
+          return response.json();
+        }
       },
 
       // Admin protected routes

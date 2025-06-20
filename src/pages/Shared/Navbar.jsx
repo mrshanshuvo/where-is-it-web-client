@@ -23,19 +23,13 @@ const Navbar = () => {
         </NavLink>
       </li>
       <li>
-        <NavLink to='/lost-items' onClick={() => setDropdownOpen(false)} className="flex items-center gap-2">
+        <NavLink to='/lost-found-items' onClick={() => setDropdownOpen(false)} className="flex items-center gap-2">
           <FaSearch className="text-lg" />
           Lost & Found Items
         </NavLink>
       </li>
       {user && (
         <>
-          <li>
-            <NavLink to='/my-items' onClick={() => setDropdownOpen(false)} className="flex items-center gap-2">
-              <FaLock className="text-lg" />
-              My Items
-            </NavLink>
-          </li>
           <li>
             <NavLink to='/recovered-items' onClick={() => setDropdownOpen(false)} className="flex items-center gap-2">
               <FaLock className="text-lg" />
@@ -147,20 +141,21 @@ const Navbar = () => {
                 <ul className="absolute right-0 mt-2 z-10 w-52 menu bg-white p-2 shadow-lg rounded-box">
                   <li className="px-4 py-2 border-b border-gray-100">
                     <div className="font-medium text-gray-900 truncate">
-                      {user.displayName || "User"}
+                      {user.name || user.displayName || "User"}
+
                     </div>
                     <div className="text-sm text-gray-500 truncate">
                       {user.email}
                     </div>
                   </li>
                   <li>
-                    <NavLink to="/profile" onClick={() => setProfileDropdownOpen(false)} className="flex items-center gap-2">
+                    <NavLink to="/my-profile" onClick={() => setProfileDropdownOpen(false)} className="flex items-center gap-2">
                       <FaUser />
                       My Profile
                     </NavLink>
                   </li>
                   <li>
-                    <NavLink to="/add-item" onClick={() => setProfileDropdownOpen(false)} className="flex items-center gap-2">
+                    <NavLink to="/add-items" onClick={() => setProfileDropdownOpen(false)} className="flex items-center gap-2">
                       <FaPlus />
                       Add New Item
                     </NavLink>

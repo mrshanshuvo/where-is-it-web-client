@@ -6,6 +6,7 @@ import { AuthContext } from '../../contexts/AuthContext/AuthContext';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import axios from 'axios';
 
 const Register = () => {
   const { createUser, updateUserProfile } = useContext(AuthContext);
@@ -48,20 +49,19 @@ const Register = () => {
     setPasswordError('');
 
     try {
-      // Create user
       const { user } = await createUser(email, password);
+      await updateUserProfile({ displayName: name, photoURL: photoURL || null });
 
-      // Update user profile
-      await updateUserProfile({
-        displayName: name,
-        photoURL: photoURL || null
-      });
+      // Get Firebase ID token and send to backend to get JWT cookie
+      const idToken = await user.getIdToken();
+      await axios.post("http://localhost:5000/api/users/firebase-login", { idToken }, { withCredentials: true });
 
       toast.success('Registration successful! Welcome to WhereIsIt');
       navigate('/');
     } catch (error) {
       toast.error(error.message || 'Registration failed. Please try again.');
-    } finally {
+    }
+    finally {
       setLoading(false);
     }
   };

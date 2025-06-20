@@ -1,120 +1,122 @@
-import { Link } from 'react-router';
-import { FaCalendarAlt, FaMapMarkerAlt, FaInfoCircle } from 'react-icons/fa';
-
-// Mock data - replace with your actual data from API
-const latestItems = [
-  {
-    id: '1',
-    type: 'lost',
-    title: 'Lost Wallet',
-    description: 'Black leather wallet containing ID and credit cards',
-    date: '2023-06-15',
-    location: 'Downtown Coffee Shop',
-    image: 'https://images.unsplash.com/photo-1551806235-6693b8a5bba3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80'
-  },
-  {
-    id: '2',
-    type: 'found',
-    title: 'Found Smartphone',
-    description: 'iPhone 13 Pro with blue case found near Central Park',
-    date: '2023-06-14',
-    location: 'Central Park Bench',
-    image: 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1367&q=80'
-  },
-  {
-    id: '3',
-    type: 'lost',
-    title: 'Lost Keys',
-    description: 'Set of car and house keys with blue keychain',
-    date: '2023-06-14',
-    location: 'Main Street Bus Stop',
-    image: 'https://images.unsplash.com/photo-1593891128927-376fd5a7d75e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80'
-  },
-  {
-    id: '4',
-    type: 'found',
-    title: 'Found Backpack',
-    description: 'Black Jansport backpack with textbooks inside',
-    date: '2023-06-13',
-    location: 'University Library',
-    image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80'
-  },
-  {
-    id: '5',
-    type: 'lost',
-    title: 'Lost Watch',
-    description: 'Silver Rolex watch with black leather strap',
-    date: '2023-06-12',
-    location: 'Fitness Center',
-    image: 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1480&q=80'
-  },
-  {
-    id: '6',
-    type: 'found',
-    title: 'Found Dog',
-    description: 'Golden Retriever with red collar found near the river',
-    date: '2023-06-11',
-    location: 'Riverside Park',
-    image: 'https://images.unsplash.com/photo-1561037404-61cd46aa615b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80'
-  }
-];
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 
 const LatestItemsSection = () => {
-  return (
-    <section className="py-12 bg-gray-50">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-8">Latest Lost & Found Items</h2>
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {latestItems.map((item) => (
-            <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-              <div className="relative h-48">
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-full object-cover"
-                />
-                <span className={`absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-semibold ${item.type === 'lost' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
-                  {item.type === 'lost' ? 'Lost' : 'Found'}
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/items");
+        if (!response.ok) throw new Error("Failed to fetch items");
+        const data = await response.json();
+        // Sort by most recent first
+        const sortedItems = data.sort(
+          (a, b) => new Date(b.date) - new Date(a.date)
+        );
+        setItems(sortedItems);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchItems();
+  }, []);
+
+  const handleViewDetails = (itemId) => {
+    navigate(`/items/${itemId}`);
+  };
+
+  const handleSeeAll = () => {
+    navigate("/lost-found-items");
+  };
+
+  if (loading) return <div className="text-center py-8">Loading latest items...</div>;
+  if (error) return <div className="text-center py-8 text-red-500">Error: {error}</div>;
+
+  // Get the 6 most recent items
+  const latestItems = items.slice(0, 6);
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h2 className="text-2xl font-bold text-center mb-8 text-gray-800">Latest Lost & Found Items</h2>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {latestItems.length === 0 ? (
+          <p className="col-span-full text-center py-8 text-gray-500">No items found.</p>
+        ) : (
+          latestItems.map((item) => (
+            <div
+              key={item._id}
+              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 flex flex-col"
+            >
+              <div className="flex justify-between items-center p-3 bg-gray-100 border-b">
+                <span
+                  className={`text-xs font-bold uppercase px-2 py-1 rounded ${item.postType.toLowerCase() === 'found'
+                    ? 'text-green-700 bg-green-100'
+                    : 'text-red-700 bg-red-100'
+                    }`}
+                >
+                  {item.postType}
+                </span>
+                <span className="text-xs text-gray-500">
+                  {item.category}
                 </span>
               </div>
 
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-                <p className="text-gray-600 mb-4 line-clamp-2">{item.description}</p>
+              {item.thumbnail && (
+                <img
+                  src={item.thumbnail}
+                  alt={item.title}
+                  className="w-full h-48 object-cover"
+                />
+              )}
 
-                <div className="flex items-center text-gray-500 mb-2">
-                  <FaCalendarAlt className="mr-2" />
-                  <span>{new Date(item.date).toLocaleDateString()}</span>
-                </div>
-
-                <div className="flex items-center text-gray-500 mb-4">
-                  <FaMapMarkerAlt className="mr-2" />
-                  <span>{item.location}</span>
-                </div>
-
-                <Link
-                  to={`/items/${item.id}`}
-                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                >
-                  <FaInfoCircle className="mr-2" />
-                  View Details
-                </Link>
+              <div className="p-4 flex-grow">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">{item.title}</h3>
+                <p className="text-gray-600 text-sm mb-1 flex items-center">
+                  <svg className="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  {item.location}
+                </p>
+                <p className="text-gray-600 text-sm mb-3 flex items-center">
+                  <svg className="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  {new Date(item.date).toLocaleDateString()}
+                </p>
+                <p className="text-gray-700 text-sm">
+                  {item.description?.length > 100
+                    ? `${item.description.substring(0, 100)}...`
+                    : item.description || "No description provided"}
+                </p>
               </div>
-            </div>
-          ))}
-        </div>
 
-        <div className="text-center mt-8">
-          <Link
-            to="/items"
-            className="inline-block px-6 py-3 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition-colors"
-          >
-            See All Lost & Found Items
-          </Link>
-        </div>
+              <button
+                onClick={() => handleViewDetails(item._id)}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 transition-colors duration-200"
+              >
+                View Details
+              </button>
+            </div>
+          ))
+        )}
       </div>
-    </section>
+
+      <button
+        onClick={handleSeeAll}
+        className="block mx-auto px-6 py-2 border-2 border-blue-600 text-blue-600 font-medium rounded hover:bg-blue-600 hover:text-white transition-colors duration-200"
+      >
+        See All Lost & Found Items
+      </button>
+    </div>
   );
 };
 
