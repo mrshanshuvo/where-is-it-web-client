@@ -16,6 +16,34 @@ const googleProvider = new GoogleAuthProvider();
 const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false);
+
+  // Common function to handle backend authentication
+  const handleBackendAuth = async (firebaseUser) => {
+    try {
+      const idToken = await firebaseUser.getIdToken();
+      const displayName = firebaseUser.displayName || "";
+
+      // Send to backend for verification and session creation
+      const response = await axios.post(
+        "http://localhost:5000/api/users/firebase-login",
+        { idToken, name: displayName },
+        { withCredentials: true }
+      );
+
+      // Return combined user data
+      return {
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        name: displayName,
+        // Include any additional data from backend if needed
+        ...(response.data.user || {}),
+      };
+    } catch (error) {
+      console.error("Backend auth error:", error);
+      throw error;
+    }
+  };
 
   const createUser = (email, password) => {
     setLoading(true);
@@ -31,30 +59,13 @@ const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const idToken = await userCredential.user.getIdToken();
-      const displayName = userCredential.user.displayName || "";
-
-      await axios.post(
-        "http://localhost:5000/api/users/firebase-login",
-        { idToken, name: displayName },
-        { withCredentials: true }
-      );
-
-      const profileRes = await axios.get("http://localhost:5000/api/users/profile", {
-        withCredentials: true,
-      });
-
-      // Merge backend profile with Firebase user
-      setUser({
-        ...userCredential.user,
-        name: profileRes.data.name,
-        uid: profileRes.data.uid,
-      });
-
-      console.log("Backend profile:", profileRes.data);
+      const userData = await handleBackendAuth(userCredential.user);
+      setUser(userData);
+      return userData;
     } catch (error) {
       console.error("Login error:", error);
       setUser(null);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -64,29 +75,13 @@ const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      const idToken = await result.user.getIdToken();
-
-      await axios.post(
-        "http://localhost:5000/api/users/firebase-login",
-        { idToken },
-        { withCredentials: true }
-      );
-
-      const profileRes = await axios.get("http://localhost:5000/api/users/profile", {
-        withCredentials: true,
-      });
-
-      // Merge backend profile with Firebase user
-      setUser({
-        ...result.user,
-        name: profileRes.data.name,
-        uid: profileRes.data.uid,
-      });
-
-      console.log("Backend profile:", profileRes.data);
+      const userData = await handleBackendAuth(result.user);
+      setUser(userData);
+      return userData;
     } catch (error) {
       console.error("Google sign-in error:", error);
       setUser(null);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -104,6 +99,7 @@ const AuthProvider = ({ children }) => {
       setUser(null);
     } catch (error) {
       console.error("Logout error:", error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -111,30 +107,10 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const unSubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setLoading(true);
-
       if (currentUser) {
         try {
-          const idToken = await currentUser.getIdToken();
-
-          await axios.post(
-            "http://localhost:5000/api/users/firebase-login",
-            { idToken },
-            { withCredentials: true }
-          );
-
-          const profileRes = await axios.get("http://localhost:5000/api/users/profile", {
-            withCredentials: true,
-          });
-
-          // Merge backend profile with Firebase user
-          setUser({
-            ...currentUser,
-            name: profileRes.data.name,
-            uid: profileRes.data.uid,
-          });
-
-          console.log("Backend profile:", profileRes.data);
+          const userData = await handleBackendAuth(currentUser);
+          setUser(userData);
         } catch (error) {
           console.error("Error syncing auth with backend:", error);
           setUser(null);
@@ -142,7 +118,7 @@ const AuthProvider = ({ children }) => {
       } else {
         setUser(null);
       }
-
+      setAuthChecked(true);
       setLoading(false);
     });
 
@@ -150,7 +126,7 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   const authInfo = {
-    loading,
+    loading: loading || !authChecked,
     user,
     createUser,
     signInUser,

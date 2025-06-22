@@ -14,7 +14,6 @@ import ReportedItems from "../pages/Admin/ReportedItems";
 import NotFound from "../pages/Shared/NotFound";
 import LostFoundItems from "../pages/Items/LostFoundItems";
 import AddItems from "../pages/Items/AddItems";
-import { auth } from "../firebase/firebase.config";
 import MyProfile from "../pages/User/MyProfile";
 
 const router = createBrowserRouter([
@@ -68,7 +67,8 @@ const router = createBrowserRouter([
         loader: () => {
           const user = JSON.parse(localStorage.getItem("user"));
           if (!user) throw new Response("Unauthorized", { status: 401 });
-          return fetch(`${import.meta.env.VITE_API_URL}/items/user/${user.uid}`);
+          // Use _id instead of uid for regular users:
+          return fetch(`${import.meta.env.VITE_API_URL}/items/user/${user._id || user.uid}`);
         },
       },
       {
@@ -94,18 +94,6 @@ const router = createBrowserRouter([
             <MyProfile />
           </PrivateRoute>
         ),
-        loader: async () => {
-          const user = auth.currentUser;
-          if (!user) throw new Error("Unauthorized");
-          const token = await user.getIdToken();
-          const response = await fetch(`http://localhost:5000/api/users/${user.uid}`, {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-          if (!response.ok) throw new Error("Failed to fetch profile");
-          return response.json();
-        }
       },
 
       // Admin protected routes

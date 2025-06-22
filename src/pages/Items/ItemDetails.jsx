@@ -49,99 +49,58 @@ const ItemDetails = () => {
 
   const handleRecoverySubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
     setIsSubmitting(true);
 
     try {
       const user = auth.currentUser;
-      if (!user) throw new Error('Authentication required');
+      if (!user) throw new Error('Please sign in first');
       if (!user.email) throw new Error('User email not available');
 
-      // Check if user is trying to recover their own item
+      console.log('Attempting to recover item with ID:', id);
+      console.log('Current user email:', user.email);
+      console.log('Item contact email:', item.contactEmail);
+
       if (user.email === item.contactEmail) {
         throw new Error('You cannot recover your own item');
       }
 
-      // Prepare recovery data
       const recoveryPayload = {
-        itemId: item._id,
-        originalPostType: item.postType,
-        originalOwner: {
-          name: item.contactName,
-          email: item.contactEmail
-        },
-        recoveredBy: {
-          userId: user.uid,
-          name: user.displayName || 'Anonymous',
-          email: user.email,
-          photoURL: user.photoURL || ''
-        },
         recoveredLocation: recoveryData.recoveredLocation,
         recoveredDate: recoveryData.recoveredDate.toISOString(),
         notes: recoveryData.notes,
-        itemDetails: {
-          title: item.title,
-          category: item.category,
-          description: item.description,
-          thumbnail: item.thumbnail
-        }
       };
 
-      // Submit recovery
-      const response = await fetch('http://localhost:5000/api/recoveries', {
+      const token = await user.getIdToken();
+
+      const response = await fetch(`http://localhost:5000/api/items/${id}/recover`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await user.getIdToken()}`
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(recoveryPayload)
+        body: JSON.stringify(recoveryPayload),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
+        console.error('Backend error response:', errorData);
         throw new Error(errorData.message || 'Recovery failed');
       }
 
-      // Update item status
-      const updateResponse = await fetch(`http://localhost:5000/api/items/${id}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await user.getIdToken()}`
-        },
-        body: JSON.stringify({ status: 'recovered' })
-      });
-
-      if (!updateResponse.ok) throw new Error('Failed to update item status');
-
-      toast.success('Recovery recorded successfully!', {
-        position: 'top-center',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true
-      });
-
-      // Redirect to lost-found-items page after a short delay
-      setTimeout(() => {
-        navigate('/lost-found-items');
-      }, 1000);
-
+      const responseData = await response.json();
+      toast.success('Recovery recorded successfully!');
+      setIsModalOpen(false);
 
       // Refresh item data
-      const updatedItem = await fetch(`http://localhost:5000/api/items/${id}`)
-        .then(res => res.json());
-      setItem(updatedItem);
-      setIsModalOpen(false);
+      const updatedResponse = await fetch(`http://localhost:5000/api/items/${id}`);
+      if (updatedResponse.ok) {
+        const updatedItem = await updatedResponse.json();
+        setItem(updatedItem);
+      }
     } catch (error) {
-      toast.error(`Error: ${error.message}`, {
-        position: 'top-center',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true
-      });
+      console.error('Recovery error:', error);
+      toast.error(`Error: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -151,8 +110,7 @@ const ItemDetails = () => {
   if (error) return <div className="text-center py-8 text-red-500">Error: {error}</div>;
   if (!item) return <div className="text-center py-8">Item not found</div>;
 
-  // Determine button text and modal title based on post type
-  const postType = item.postType?.trim()?.toLowerCase();
+  const postType = item.postType?.toLowerCase();
   const actionButtonText = postType === 'found' ? 'This is Mine!' : 'Found This!';
   const modalTitle = postType === 'found' ? 'Claim This Item' : 'Report Recovery';
   const locationLabel = postType === 'found' ? 'Where did you receive it?' : 'Where was it found?';
@@ -167,7 +125,7 @@ const ItemDetails = () => {
             <div>
               <h1 className="text-2xl font-bold text-gray-800">{item.title}</h1>
               <div className="flex items-center mt-2">
-                <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${item.postType === 'found'
+                <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${postType === 'found'
                   ? 'bg-green-100 text-green-800'
                   : 'bg-red-100 text-red-800'
                   }`}>
@@ -193,7 +151,7 @@ const ItemDetails = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Left Column - Image */}
             <div>
-              {item.thumbnail && (
+              {item.thumbnail ? (
                 <img
                   src={item.thumbnail}
                   alt={item.title}
@@ -202,6 +160,10 @@ const ItemDetails = () => {
                     e.target.src = 'https://via.placeholder.com/400?text=No+Image';
                   }}
                 />
+              ) : (
+                <div className="w-full h-64 bg-gray-100 flex items-center justify-center rounded-lg text-gray-400">
+                  No Image Available
+                </div>
               )}
             </div>
 
@@ -219,9 +181,7 @@ const ItemDetails = () => {
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-gray-500">Date</h3>
-                  <p className="text-gray-800">
-                    {new Date(item.date).toLocaleDateString()}
-                  </p>
+                  <p className="text-gray-800">{new Date(item.date).toLocaleDateString()}</p>
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-gray-500">Status</h3>
@@ -233,18 +193,20 @@ const ItemDetails = () => {
                 </div>
               </div>
 
-              {/* Recovery Button - Only show if item is active and user is not the original poster */}
-              {item.status !== 'recovered' && auth.currentUser && auth.currentUser.email !== item.contactEmail && (
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className={`px-4 py-2 rounded-md font-medium ${item.postType === 'found'
-                    ? 'bg-green-600 hover:bg-green-700 text-white'
-                    : 'bg-blue-600 hover:bg-blue-700 text-white'
-                    }`}
-                >
-                  {actionButtonText}
-                </button>
-              )}
+              {/* Recovery Button */}
+              {item.status !== 'recovered' &&
+                auth.currentUser &&
+                auth.currentUser.email !== item.contactEmail && (
+                  <button
+                    onClick={() => setIsModalOpen(true)}
+                    className={`px-4 py-2 rounded-md font-medium ${postType === 'found'
+                      ? 'bg-green-600 hover:bg-green-700 text-white'
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                      }`}
+                  >
+                    {actionButtonText}
+                  </button>
+                )}
             </div>
           </div>
         </div>
@@ -270,9 +232,7 @@ const ItemDetails = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
             <div className="p-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">
-                {modalTitle}
-              </h2>
+              <h2 className="text-xl font-bold text-gray-800 mb-4">{modalTitle}</h2>
 
               <form onSubmit={handleRecoverySubmit}>
                 <div className="mb-4">
@@ -303,9 +263,7 @@ const ItemDetails = () => {
                 </div>
 
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Additional Notes
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Additional Notes</label>
                   <textarea
                     name="notes"
                     value={recoveryData.notes}
@@ -316,9 +274,7 @@ const ItemDetails = () => {
                 </div>
 
                 <div className="mb-6">
-                  <h3 className="text-sm font-medium text-gray-700 mb-1">
-                    Your Information
-                  </h3>
+                  <h3 className="text-sm font-medium text-gray-700 mb-1">Your Information</h3>
                   <div className="bg-gray-50 p-3 rounded-md">
                     <div className="flex items-center space-x-3">
                       {auth.currentUser?.photoURL && (
@@ -353,7 +309,7 @@ const ItemDetails = () => {
                     disabled={isSubmitting}
                     className={`px-4 py-2 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${isSubmitting
                       ? 'bg-gray-400 cursor-not-allowed'
-                      : item.postType === 'found'
+                      : postType === 'found'
                         ? 'bg-green-600 hover:bg-green-700'
                         : 'bg-blue-600 hover:bg-blue-700'
                       }`}

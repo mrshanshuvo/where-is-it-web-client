@@ -1,31 +1,65 @@
-import React, { useContext } from "react";
-import { useNavigate } from "react-router";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../../firebase/firebase.config";
 import { AuthContext } from "../../contexts/AuthContext/AuthContext";
-import { toast } from "react-toastify";
-import { FaGoogle } from "react-icons/fa";
+import { useLocation, useNavigate } from "react-router";
+import { toast } from "react-hot-toast";
+import { useContext } from "react";
 
 const SocialLogin = ({ from }) => {
-  const { signInWithGoogle } = useContext(AuthContext);
+  const { setUser } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
+  const googleProvider = new GoogleAuthProvider();
 
   const handleGoogleSignIn = async () => {
     try {
-      await signInWithGoogle();
-      toast.success("Signed in with Google successfully!");
-      navigate(from || "/", { replace: true });
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+
+      // Send the ID token to your backend
+      const idToken = await user.getIdToken();
+
+      const response = await fetch("/api/users/firebase-login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          idToken,
+          name: user.displayName,
+        }),
+        credentials: "include", // Important for cookies
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setUser({
+          uid: user.uid,
+          email: user.email,
+          name: user.displayName,
+        });
+        toast.success("Login successful");
+        navigate(from || "/", { replace: true });
+      } else {
+        throw new Error(data.message || "Google login failed");
+      }
     } catch (error) {
-      toast.error(`Failed to sign in with Google: ${error.message}`);
+      toast.error(error.message);
+      console.error("Google sign-in error:", error);
     }
   };
 
   return (
-    <button
-      onClick={handleGoogleSignIn}
-      className="btn btn-outline w-full flex items-center justify-center gap-2"
-    >
-      <FaGoogle className="text-lg" />
-      Sign in with Google
-    </button>
+    <div className="mt-6">
+      <div className="divider">OR</div>
+      <button
+        onClick={handleGoogleSignIn}
+        className="btn btn-outline w-full"
+      >
+        Continue with Google
+      </button>
+    </div>
   );
 };
 
