@@ -28,16 +28,6 @@ const Navbar = () => {
           Lost & Found Items
         </NavLink>
       </li>
-      {user && (
-        <>
-          <li>
-            <NavLink to='/recovered-items' onClick={() => setDropdownOpen(false)} className="flex items-center gap-2">
-              <FaLock className="text-lg" />
-              Recovered Items
-            </NavLink>
-          </li>
-        </>
-      )}
       {user?.role === 'admin' && (
         <>
           <li>
@@ -107,14 +97,6 @@ const Navbar = () => {
       <div className="navbar-end flex items-center gap-4">
         {user ? (
           <>
-            <NavLink
-              to="/report-item"
-              className="btn btn-primary btn-sm md:btn-md gap-2"
-            >
-              <FaPlus />
-              <span className="hidden sm:inline">Report Item</span>
-            </NavLink>
-
             <div className="relative">
               <div
                 role="button"
@@ -161,7 +143,13 @@ const Navbar = () => {
                     </NavLink>
                   </li>
                   <li>
-                    <NavLink to="/manage-items" onClick={() => setProfileDropdownOpen(false)} className="flex items-center gap-2">
+                    <NavLink to='/recovered-items' onClick={() => setProfileDropdownOpen(false)} className="flex items-center gap-2">
+                      <FaLock />
+                      Recovered Items
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink to="/my-items" onClick={() => setProfileDropdownOpen(false)} className="flex items-center gap-2">
                       <FaLock />
                       Manage My Items
                     </NavLink>

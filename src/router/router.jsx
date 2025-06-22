@@ -5,16 +5,13 @@ import Register from "../pages/Auth/Register";
 import SignIn from "../pages/Auth/SignIn";
 import ItemDetails from "../pages/Items/ItemDetails";
 import PrivateRoute from "./PrivateRoute";
-import ReportItem from "../pages/Items/ReportItem";
-import MyItems from "../pages/User/MyItems";
 import RecoveredItems from "../pages/User/RecoveredItems";
-import ManageItems from "../pages/User/ManageItems";
-import AdminDashboard from "../pages/Admin/AdminDashboard";
-import ReportedItems from "../pages/Admin/ReportedItems";
 import NotFound from "../pages/Shared/NotFound";
 import LostFoundItems from "../pages/Items/LostFoundItems";
 import AddItems from "../pages/Items/AddItems";
 import MyProfile from "../pages/User/MyProfile";
+import MyItems from "../pages/User/MyItems";
+import UpdateItem from "../pages/User/UpdateItem";
 
 const router = createBrowserRouter([
   {
@@ -31,7 +28,9 @@ const router = createBrowserRouter([
         path: "lost-found-items",
         Component: LostFoundItems,
         loader: () =>
-          fetch(`${import.meta.env.VITE_API_URL}/items?type=lost&status=active`),
+          fetch(
+            `${import.meta.env.VITE_API_URL}/items?type=lost&status=active`
+          ),
       },
       {
         path: "items/:id",
@@ -50,40 +49,18 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "report-item",
-        element: (
-          <PrivateRoute>
-            <ReportItem />
-          </PrivateRoute>
-        ),
-      },
-      {
         path: "my-items",
         element: (
           <PrivateRoute>
             <MyItems />
           </PrivateRoute>
         ),
-        loader: () => {
-          const user = JSON.parse(localStorage.getItem("user"));
-          if (!user) throw new Response("Unauthorized", { status: 401 });
-          // Use _id instead of uid for regular users:
-          return fetch(`${import.meta.env.VITE_API_URL}/items/user/${user._id || user.uid}`);
-        },
       },
       {
         path: "recovered-items",
         element: (
           <PrivateRoute>
             <RecoveredItems />
-          </PrivateRoute>
-        ),
-      },
-      {
-        path: "manage-items",
-        element: (
-          <PrivateRoute>
-            <ManageItems />
           </PrivateRoute>
         ),
       },
@@ -95,24 +72,14 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
-
-      // Admin protected routes
       {
-        path: "admin/dashboard",
+        path: "updateItems/:id",
         element: (
-          <PrivateRoute adminOnly={true}>
-            <AdminDashboard />
+          <PrivateRoute>
+            <UpdateItem />
           </PrivateRoute>
-        ),
-      },
-      {
-        path: "admin/reported-items",
-        element: (
-          <PrivateRoute adminOnly={true}>
-            <ReportedItems />
-          </PrivateRoute>
-        ),
-      },
+        )
+      }
     ],
   },
 ]);
