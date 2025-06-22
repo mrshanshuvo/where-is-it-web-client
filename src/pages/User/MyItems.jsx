@@ -57,7 +57,7 @@ const MyItems = () => {
   }, []);
 
   const handleEdit = (itemId) => {
-    navigate(`/edit-item/${itemId}`);
+    navigate(`/updateItems/${itemId}`);
   };
 
   const handleDelete = async (itemId) => {
