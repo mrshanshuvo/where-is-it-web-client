@@ -20,7 +20,7 @@ const RecoveredItems = () => {
         }
 
         const token = await user.getIdToken();
-        const response = await fetch('http://localhost:5000/api/recoveries', {
+        const response = await fetch('https://whereisit-server-lfldlwb2p-mrshanshuvos-projects.vercel.app/api/recoveries', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -86,8 +86,8 @@ const RecoveredItems = () => {
                   {recovery.originalItemData?.title || 'Untitled Item'}
                 </h2>
                 <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${recovery.originalPostType === 'found'
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800'
                   }`}>
                   {recovery.originalPostType}
                 </span>

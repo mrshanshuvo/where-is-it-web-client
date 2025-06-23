@@ -54,7 +54,7 @@ const Register = () => {
 
       // Get Firebase ID token and send to backend to get JWT cookie
       const idToken = await user.getIdToken();
-      await axios.post("http://localhost:5000/api/users/firebase-login", { idToken }, { withCredentials: true });
+      await axios.post("https://whereisit-server-lfldlwb2p-mrshanshuvos-projects.vercel.app/api/users/firebase-login", { idToken }, { withCredentials: true });
 
       toast.success('Registration successful! Welcome to WhereIsIt');
       navigate('/');

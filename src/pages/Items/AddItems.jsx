@@ -82,7 +82,7 @@ const AddItems = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/items', {
+      const response = await fetch('https://whereisit-server-lfldlwb2p-mrshanshuvos-projects.vercel.app/api/items', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

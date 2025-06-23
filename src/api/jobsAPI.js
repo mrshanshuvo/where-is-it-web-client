@@ -1,5 +1,5 @@
 export const jobsCreatedByPromise = (email) => {
-  return fetch(`http://localhost:5000/jobs?email=${email}`).then((res) =>
-    res.json()
-  );
+  return fetch(
+    `https://whereisit-server-lfldlwb2p-mrshanshuvos-projects.vercel.app/jobs?email=${email}`
+  ).then((res) => res.json());
 };

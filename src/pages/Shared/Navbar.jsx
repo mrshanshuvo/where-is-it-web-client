@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { NavLink } from 'react-router';
 import { FaHome, FaSearch, FaPlus, FaUser, FaSignOutAlt, FaLock } from 'react-icons/fa';
 import { AuthContext } from '../../contexts/AuthContext/AuthContext';
+import Swal from 'sweetalert2';
 
 const Navbar = () => {
   const { user, signOutUser } = useContext(AuthContext);
@@ -10,7 +11,15 @@ const Navbar = () => {
 
   const handleSignOut = () => {
     signOutUser()
-      .then(() => console.log('Signed out successfully'))
+      .then(() => {
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Logged out successfully",
+          showConfirmButton: false,
+          timer: 1500
+        });
+      })
       .catch(console.error);
   };
 
