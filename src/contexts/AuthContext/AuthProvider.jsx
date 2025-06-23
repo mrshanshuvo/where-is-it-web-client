@@ -26,7 +26,7 @@ const AuthProvider = ({ children }) => {
 
       // Send to backend for verification and session creation
       const response = await axios.post(
-        "https://whereisit-server-lfldlwb2p-mrshanshuvos-projects.vercel.app/api/users/firebase-login",
+        "https://whereisit-server-inky.vercel.app/api/users/firebase-login",
         { idToken, name: displayName },
         { withCredentials: true }
       );
@@ -92,7 +92,7 @@ const AuthProvider = ({ children }) => {
     try {
       await signOut(auth);
       await axios.post(
-        "https://whereisit-server-lfldlwb2p-mrshanshuvos-projects.vercel.app/api/users/logout",
+        "https://whereisit-server-inky.vercel.app/api/users/logout",
         {},
         { withCredentials: true }
       );

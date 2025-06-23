@@ -32,7 +32,7 @@ const MyProfile = () => {
         const token = await user.getIdToken();
 
         // Fetch profile data
-        const profileResponse = await fetch('https://whereisit-server-lfldlwb2p-mrshanshuvos-projects.vercel.app/api/users/profile', {
+        const profileResponse = await fetch('https://whereisit-server-inky.vercel.app/api/users/profile', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -46,14 +46,14 @@ const MyProfile = () => {
         setUserData(profileData);
 
         // Fetch user's items count
-        const itemsResponse = await fetch('https://whereisit-server-lfldlwb2p-mrshanshuvos-projects.vercel.app/api/debug/my-items', {
+        const itemsResponse = await fetch('https://whereisit-server-inky.vercel.app/api/debug/my-items', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
 
         // Fetch recoveries data
-        const recoveriesResponse = await fetch('https://whereisit-server-lfldlwb2p-mrshanshuvos-projects.vercel.app/api/recoveries', {
+        const recoveriesResponse = await fetch('https://whereisit-server-inky.vercel.app/api/recoveries', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -98,7 +98,7 @@ const MyProfile = () => {
   const handleLogout = async () => {
     try {
       await auth.signOut();
-      await fetch('https://whereisit-server-lfldlwb2p-mrshanshuvos-projects.vercel.app/api/users/logout', {
+      await fetch('https://whereisit-server-inky.vercel.app/api/users/logout', {
         method: 'POST',
         credentials: 'include'
       });

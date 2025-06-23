@@ -28,7 +28,7 @@ const MyItems = () => {
         }
 
         const token = await user.getIdToken();
-        const response = await fetch('https://whereisit-server-lfldlwb2p-mrshanshuvos-projects.vercel.app/api/debug/my-items', {
+        const response = await fetch('https://whereisit-server-inky.vercel.app/api/debug/my-items', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -72,7 +72,7 @@ const MyItems = () => {
       if (!user) throw new Error('Please sign in to delete items');
 
       const token = await user.getIdToken();
-      const response = await fetch(`https://whereisit-server-lfldlwb2p-mrshanshuvos-projects.vercel.app/api/items/${itemId}`, {
+      const response = await fetch(`https://whereisit-server-inky.vercel.app/api/items/${itemId}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,

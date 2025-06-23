@@ -3,6 +3,7 @@ import { NavLink } from 'react-router';
 import { FaHome, FaSearch, FaPlus, FaUser, FaSignOutAlt, FaLock } from 'react-icons/fa';
 import { AuthContext } from '../../contexts/AuthContext/AuthContext';
 import Swal from 'sweetalert2';
+import logo from '../../assets/logo.svg';
 
 const Navbar = () => {
   const { user, signOutUser } = useContext(AuthContext);
@@ -84,7 +85,7 @@ const Navbar = () => {
         </div>
         <div className="flex items-center gap-2">
           <img
-            src="src\assets\logo.svg"
+            src={logo}
             alt="WhereIsIt Logo"
             className="w-10 h-10 object-contain"
           />

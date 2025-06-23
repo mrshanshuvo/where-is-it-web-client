@@ -39,7 +39,7 @@ const UpdateItem = () => {
         if (!user) throw new Error('Please sign in to edit items');
 
         const token = await user.getIdToken();
-        const response = await fetch(`https://whereisit-server-lfldlwb2p-mrshanshuvos-projects.vercel.app/api/items/${id}`, {
+        const response = await fetch(`https://whereisit-server-inky.vercel.app/api/items/${id}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -94,7 +94,7 @@ const UpdateItem = () => {
       };
 
       const token = await user.getIdToken();
-      const response = await fetch(`https://whereisit-server-lfldlwb2p-mrshanshuvos-projects.vercel.app/api/items/${id}`, {
+      const response = await fetch(`https://whereisit-server-inky.vercel.app/api/items/${id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

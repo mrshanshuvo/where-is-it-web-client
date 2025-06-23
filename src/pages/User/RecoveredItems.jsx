@@ -20,7 +20,7 @@ const RecoveredItems = () => {
         }
 
         const token = await user.getIdToken();
-        const response = await fetch('https://whereisit-server-lfldlwb2p-mrshanshuvos-projects.vercel.app/api/recoveries', {
+        const response = await fetch('https://whereisit-server-inky.vercel.app/api/recoveries', {
           headers: {
             Authorization: `Bearer ${token}`,
           },

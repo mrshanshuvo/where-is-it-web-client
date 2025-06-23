@@ -36,7 +36,7 @@ const ItemDetails = () => {
     const fetchItem = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`https://whereisit-server-lfldlwb2p-mrshanshuvos-projects.vercel.app/api/items/${id}`);
+        const response = await fetch(`https://whereisit-server-inky.vercel.app/api/items/${id}`);
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -104,7 +104,7 @@ const ItemDetails = () => {
       };
 
       const token = await user.getIdToken();
-      const response = await fetch(`https://whereisit-server-lfldlwb2p-mrshanshuvos-projects.vercel.app/api/items/${id}/recover`, {
+      const response = await fetch(`https://whereisit-server-inky.vercel.app/api/items/${id}/recover`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -130,7 +130,7 @@ const ItemDetails = () => {
       });
 
       // Refresh item data
-      const updatedResponse = await fetch(`https://whereisit-server-lfldlwb2p-mrshanshuvos-projects.vercel.app/api/items/${id}`);
+      const updatedResponse = await fetch(`https://whereisit-server-inky.vercel.app/api/items/${id}`);
       if (updatedResponse.ok) {
         setItem(await updatedResponse.json());
       }
