@@ -2,6 +2,9 @@ import React, { Suspense } from "react";
 import { ClipLoader } from "react-spinners";
 import BannerSlider from "./BannerSlider";
 import LatestItemsSection from "./LatestItemsSection";
+import StatsSection from "./StatsSection";
+import HowItWorks from "./HowItWorks";
+import { motion } from "framer-motion";
 
 const Home = () => {
   return (
@@ -16,6 +19,27 @@ const Home = () => {
       >
         <LatestItemsSection></LatestItemsSection>
       </Suspense>
+      {/* Stats Section - Extra Section 1 */}
+      <motion.section
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.3 }}
+        className="my-12"
+      >
+        <StatsSection />
+      </motion.section>
+
+      {/* How It Works Section - Extra Section 2 */}
+      <motion.section
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.4 }}
+        className="my-12"
+      >
+        <HowItWorks />
+      </motion.section>
     </div>
   );
 };
