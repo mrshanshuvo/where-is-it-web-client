@@ -87,6 +87,12 @@ const UpdateItem = () => {
       const user = auth.currentUser;
       if (!user) throw new Error('Please sign in to update items');
 
+      // Prepare payload with proper date formatting
+      const payload = {
+        ...formData,
+        date: new Date(formData.date).toISOString()
+      };
+
       const token = await user.getIdToken();
       const response = await fetch(`http://localhost:5000/api/items/${id}`, {
         method: 'PUT',
@@ -94,19 +100,25 @@ const UpdateItem = () => {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
 
+      const data = await response.json(); // Always parse JSON
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update item');
+        throw new Error(data.message || `HTTP error! status: ${response.status}`);
       }
 
-      toast.success('Item updated successfully!');
-      navigate('/my-items'); // Redirect to my items page
+      toast.success(data.message || 'Item updated successfully!');
+      navigate('/my-items');
+
     } catch (err) {
-      console.error('Update error:', err);
-      toast.error(err.message || 'Error updating item');
+      console.error('Update failed:', {
+        error: err,
+        formData,
+        id
+      });
+      toast.error(err.message || 'Failed to update item');
     } finally {
       setSubmitting(false);
     }
