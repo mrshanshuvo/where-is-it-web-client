@@ -86,7 +86,7 @@ A modern, responsive Lost & Found web application to report, browse, and claim l
 - Git  
 
 ### Installation
-```bash
+
 # Clone repository
 git clone https://github.com/mrshanshuvo/where-is-it-web-client.git
 cd where-is-it-web-client
