@@ -25,17 +25,17 @@ A modern, responsive Lost & Found web application to report, browse, and claim l
 ---
 
 ## 📝 Table of Contents
-- [About](#about)
-- [Key Features](#key-features)
-- [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
-- [Available Scripts](#available-scripts)
-- [Project Structure](#project-structure)
-- [Routing Overview](#routing-overview)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+- [About](#💡-about)
+- [Key Features](#⚡-key-features)
+- [Tech Stack](#🛠-tech-stack)
+- [Getting Started](#🚀-getting-started)
+- [Available Scripts](#📜-available-scripts)
+- [Project Structure](#🏗-project-structure)
+- [Routing Overview](#🗺-routing-overview)
+- [Deployment](#☁️-deployment)
+- [Contributing](#🤝-contributing)
+- [License](#📄-license)
+- [Contact](#📫-contact)
 
 ---
 
@@ -87,18 +87,22 @@ A modern, responsive Lost & Found web application to report, browse, and claim l
 
 ### Installation
 
+```bash
 # Clone repository
 git clone https://github.com/mrshanshuvo/where-is-it-web-client.git
 cd where-is-it-web-client
 
 # Install dependencies
 npm install
-# or yarn install
-Environment Variables
-Create a .env.local file in the root directory:
+# or
+yarn install
+```
 
-env
-Copy code
+### Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```env
 VITE_FIREBASE_API_KEY=your_firebase_api_key
 VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
 VITE_FIREBASE_PROJECT_ID=your_project_id
@@ -106,11 +110,15 @@ VITE_FIREBASE_STORAGE_BUCKET=your_bucket
 VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
 VITE_API_BASE_URL=http://localhost:5000
-⚠️ Do not commit .env.local to GitHub. Keep keys private.
+```
 
-📜 Available Scripts
-bash
-Copy code
+> ⚠️ Do not commit `.env.local` to GitHub. Keep keys private.
+
+---
+
+## 📜 Available Scripts
+
+```bash
 # Start development server
 npm run dev
 
@@ -122,9 +130,13 @@ npm run preview
 
 # Lint code
 npm run lint
-🏗 Project Structure
-bash
-Copy code
+```
+
+---
+
+## 🏗 Project Structure
+
+```bash
 src/
 ├─ api/           # Axios API calls
 ├─ assets/        # Images & Lottie animations
@@ -137,74 +149,85 @@ src/
 ├─ router/        # Routes & PrivateRoute
 ├─ index.css      # Global CSS
 └─ main.jsx       # React entry point
-🗺 Routing Overview
-/ — Home
+```
 
-/auth/login — Login
+---
 
-/auth/register — Register
+## 🗺 Routing Overview
 
-/items — Browse lost/found items
+```
+/                 — Home  
+/auth/login       — Login  
+/auth/register    — Register  
+/items            — Browse lost/found items  
+/items/add        — Add new item  
+/items/:id        — Item details & claim  
+/dashboard        — Admin dashboard  
+/user/profile     — User profile & recovered items  
+*                 — 404 Not Found  
+```
 
-/items/add — Add new item
+---
 
-/items/:id — Item details & claim
+## ☁️ Deployment
 
-/dashboard — Admin dashboard
+**Firebase Hosting**
 
-/user/profile — User profile & recovered items
+```bash
+# Install Firebase CLI
+npm install -g firebase-tools
 
-* — 404 Not Found
+# Login to Firebase
+firebase login
 
-☁️ Deployment
-Firebase Hosting
+# Initialize project (select Hosting + build output folder)
+firebase init
 
-Install Firebase CLI: npm install -g firebase-tools
+# Build the app
+npm run build
 
-Login: firebase login
+# Deploy to Firebase
+firebase deploy
+```
 
-Initialize project: firebase init (select Hosting + build output folder)
+Access live app: [https://your-firebase-app.web.app](https://your-firebase-app.web.app)
 
-Build the app: npm run build
+> Optional: Use `firebase.json` and `.firebaserc` to manage multiple environments.
 
-Deploy: firebase deploy
+---
 
-Access live app: https://your-firebase-app.web.app
+## 🤝 Contributing
 
-Optional: Use firebase.json and .firebaserc to manage multiple environments.
+```bash
+# Fork the repository
 
-🤝 Contributing
-Fork the repository
+# Create a branch
+git checkout -b feature/your-feature
 
-Create a branch: feature/your-feature
+# Commit changes
+git commit -m "feat: add X"
 
-Commit changes: git commit -m "feat: add X"
-
-Push branch & open a PR to main
+# Push branch & open a PR to main
+```
 
 Follow coding standards: ESLint + Prettier enforced.
 
-📄 License
-MIT License — see LICENSE.
+---
 
-📫 Contact
-Shahid Hasan Shuvo
+## 📄 License
 
-GitHub: https://github.com/mrshanshuvo
+MIT License — see [LICENSE](LICENSE).
 
-Email: mrshanshuvo@gmail.com
+---
+
+## 📫 Contact
+
+**Shahid Hasan Shuvo**  
+GitHub: [https://github.com/mrshanshuvo](https://github.com/mrshanshuvo)  
+Email: mrshanshuvo@gmail.com  
+
+---
 
 🚀 Built with ❤️ using React, Firebase, and Tailwind CSS. Perfect showcase for recruiters to see real-world web development skills.
 
-yaml
-Copy code
-
----
-
-✅ **Updates for Firebase deployment**:  
-- Added Firebase Hosting badge  
-- Updated live demo link to Firebase URL  
-- Deployment section uses `firebase deploy` workflow  
-- Maintains recruiter-focused structure with GIF placeholders  
-
----
+```
