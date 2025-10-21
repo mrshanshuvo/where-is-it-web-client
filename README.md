@@ -20,22 +20,22 @@ A modern, responsive Lost & Found web application to report, browse, and claim l
 | Admin Dashboard | _Add admin dashboard GIF here_ |
 | User Profile & Recovered Items | _Add user profile GIF here_ |
 
-> Tip: Replace static images with GIFs (~3–5 seconds) to show interactions: sliders, modals, and claim flow.
+> **Tip:** Replace static images with GIFs (~3–5 seconds) to show interactions: sliders, modals, and claim flow.
 
 ---
 
 ## 📝 Table of Contents
-- [About](#💡-about)
-- [Key Features](#⚡-key-features)
-- [Tech Stack](#🛠-tech-stack)
-- [Getting Started](#🚀-getting-started)
-- [Available Scripts](#📜-available-scripts)
-- [Project Structure](#🏗-project-structure)
-- [Routing Overview](#🗺-routing-overview)
-- [Deployment](#☁️-deployment)
-- [Contributing](#🤝-contributing)
-- [License](#📄-license)
-- [Contact](#📫-contact)
+- [About](#about)
+- [Key Features](#key-features)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Available Scripts](#available-scripts)
+- [Project Structure](#project-structure)
+- [Routing Overview](#routing-overview)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
 
 ---
 
@@ -86,7 +86,6 @@ A modern, responsive Lost & Found web application to report, browse, and claim l
 - Git  
 
 ### Installation
-
 ```bash
 # Clone repository
 git clone https://github.com/mrshanshuvo/where-is-it-web-client.git
@@ -94,14 +93,11 @@ cd where-is-it-web-client
 
 # Install dependencies
 npm install
-# or
-yarn install
+# or yarn install
 ```
 
 ### Environment Variables
-
 Create a `.env.local` file in the root directory:
-
 ```env
 VITE_FIREBASE_API_KEY=your_firebase_api_key
 VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
@@ -112,12 +108,11 @@ VITE_FIREBASE_APP_ID=your_app_id
 VITE_API_BASE_URL=http://localhost:5000
 ```
 
-> ⚠️ Do not commit `.env.local` to GitHub. Keep keys private.
+⚠️ **Do not commit `.env.local` to GitHub. Keep keys private.**
 
 ---
 
 ## 📜 Available Scripts
-
 ```bash
 # Start development server
 npm run dev
@@ -135,8 +130,7 @@ npm run lint
 ---
 
 ## 🏗 Project Structure
-
-```bash
+```
 src/
 ├─ api/           # Axios API calls
 ├─ assets/        # Images & Lottie animations
@@ -155,79 +149,78 @@ src/
 
 ## 🗺 Routing Overview
 
-```
-/                 — Home  
-/auth/login       — Login  
-/auth/register    — Register  
-/items            — Browse lost/found items  
-/items/add        — Add new item  
-/items/:id        — Item details & claim  
-/dashboard        — Admin dashboard  
-/user/profile     — User profile & recovered items  
-*                 — 404 Not Found  
-```
+| Route | Description |
+|-------|-------------|
+| `/` | Home |
+| `/auth/login` | Login |
+| `/auth/register` | Register |
+| `/items` | Browse lost/found items |
+| `/items/add` | Add new item |
+| `/items/:id` | Item details & claim |
+| `/dashboard` | Admin dashboard |
+| `/user/profile` | User profile & recovered items |
+| `*` | 404 Not Found |
 
 ---
 
 ## ☁️ Deployment
 
-**Firebase Hosting**
+### Firebase Hosting
 
+1. **Install Firebase CLI:**  
 ```bash
-# Install Firebase CLI
-npm install -g firebase-tools
-
-# Login to Firebase
-firebase login
-
-# Initialize project (select Hosting + build output folder)
-firebase init
-
-# Build the app
-npm run build
-
-# Deploy to Firebase
-firebase deploy
+   npm install -g firebase-tools
 ```
 
-Access live app: [https://your-firebase-app.web.app](https://your-firebase-app.web.app)
+2. **Login:**  
+```bash
+   firebase login
+```
 
-> Optional: Use `firebase.json` and `.firebaserc` to manage multiple environments.
+3. **Initialize project:**  
+```bash
+   firebase init
+```
+   Select **Hosting** and set build output folder to `dist`
+
+4. **Build the app:**  
+```bash
+   npm run build
+```
+
+5. **Deploy:**  
+```bash
+   firebase deploy
+```
+
+6. **Access live app:**  
+   `https://your-firebase-app.web.app`
+
+> **Optional:** Use `firebase.json` and `.firebaserc` to manage multiple environments.
 
 ---
 
 ## 🤝 Contributing
 
-```bash
-# Fork the repository
-
-# Create a branch
-git checkout -b feature/your-feature
-
-# Commit changes
-git commit -m "feat: add X"
-
-# Push branch & open a PR to main
-```
-
-Follow coding standards: ESLint + Prettier enforced.
+1. Fork the repository  
+2. Create a branch: `git checkout -b feature/your-feature`  
+3. Commit changes: `git commit -m "feat: add X"`  
+4. Push branch & open a PR to `main`  
+5. Follow coding standards: ESLint + Prettier enforced  
 
 ---
 
 ## 📄 License
-
 MIT License — see [LICENSE](LICENSE).
 
 ---
 
 ## 📫 Contact
-
 **Shahid Hasan Shuvo**  
-GitHub: [https://github.com/mrshanshuvo](https://github.com/mrshanshuvo)  
-Email: mrshanshuvo@gmail.com  
+- GitHub: [@mrshanshuvo](https://github.com/mrshanshuvo)  
+- Email: mrshanshuvo@gmail.com  
 
 ---
 
-🚀 Built with ❤️ using React, Firebase, and Tailwind CSS. Perfect showcase for recruiters to see real-world web development skills.
-
-```
+🚀 **Built with ❤️ using React, Firebase, and Tailwind CSS.**  
+Perfect showcase for recruiters to see real-world web development skills.
