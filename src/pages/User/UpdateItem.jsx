@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router';
-import { auth } from '../../firebase/firebase.config';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import LoadingSpinner from '../../components/LoadingSpinner';
-import ErrorMessage from '../../components/ErrorMessage';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router";
+import { auth } from "../../firebase/firebase.config";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import LoadingSpinner from "../../components/LoadingSpinner";
+import ErrorMessage from "../../components/ErrorMessage";
 
 const UpdateItem = () => {
   const { id } = useParams();
@@ -13,21 +13,26 @@ const UpdateItem = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [categories] = useState([
-    'Electronics', 'Documents', 'Jewelry', 'Clothing',
-    'Accessories', 'Bags', 'Other'
+    "Electronics",
+    "Documents",
+    "Jewelry",
+    "Clothing",
+    "Accessories",
+    "Bags",
+    "Other",
   ]);
 
   const [formData, setFormData] = useState({
-    postType: 'lost',
-    title: '',
-    description: '',
-    category: '',
-    location: '',
-    date: '',
-    thumbnail: '',
-    contactName: '',
-    contactEmail: '',
-    status: 'active'
+    postType: "lost",
+    title: "",
+    description: "",
+    category: "",
+    location: "",
+    date: "",
+    thumbnail: "",
+    contactName: "",
+    contactEmail: "",
+    status: "active",
   });
 
   // Fetch item data to pre-fill form
@@ -36,18 +41,18 @@ const UpdateItem = () => {
       try {
         setLoading(true);
         const user = auth.currentUser;
-        if (!user) throw new Error('Please sign in to edit items');
+        if (!user) throw new Error("Please sign in to edit items");
 
         const token = await user.getIdToken();
-        const response = await fetch(`https://whereisit-server-inky.vercel.app/api/items/${id}`, {
+        const response = await fetch(`http://localhost:5000/api/items/${id}`, {
           headers: {
-            'Authorization': `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to fetch item');
+          throw new Error(errorData.message || "Failed to fetch item");
         }
 
         const data = await response.json();
@@ -57,14 +62,14 @@ const UpdateItem = () => {
           description: data.description,
           category: data.category,
           location: data.location,
-          date: data.date.split('T')[0], // Format date for input
+          date: data.date.split("T")[0], // Format date for input
           thumbnail: data.thumbnail,
           contactName: data.contactName,
           contactEmail: data.contactEmail,
-          status: data.status || 'active'
+          status: data.status || "active",
         });
       } catch (err) {
-        console.error('Fetch error:', err);
+        console.error("Fetch error:", err);
         setError(err.message);
         toast.error(err.message);
       } finally {
@@ -77,7 +82,7 @@ const UpdateItem = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -85,40 +90,41 @@ const UpdateItem = () => {
     try {
       setSubmitting(true);
       const user = auth.currentUser;
-      if (!user) throw new Error('Please sign in to update items');
+      if (!user) throw new Error("Please sign in to update items");
 
       // Prepare payload with proper date formatting
       const payload = {
         ...formData,
-        date: new Date(formData.date).toISOString()
+        date: new Date(formData.date).toISOString(),
       };
 
       const token = await user.getIdToken();
-      const response = await fetch(`https://whereisit-server-inky.vercel.app/api/items/${id}`, {
-        method: 'PUT',
+      const response = await fetch(`http://localhost:5000/api/items/${id}`, {
+        method: "PUT",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json(); // Always parse JSON
 
       if (!response.ok) {
-        throw new Error(data.message || `HTTP error! status: ${response.status}`);
+        throw new Error(
+          data.message || `HTTP error! status: ${response.status}`
+        );
       }
 
-      toast.success(data.message || 'Item updated successfully!');
-      navigate('/my-items');
-
+      toast.success(data.message || "Item updated successfully!");
+      navigate("/my-items");
     } catch (err) {
-      console.error('Update failed:', {
+      console.error("Update failed:", {
         error: err,
         formData,
-        id
+        id,
       });
-      toast.error(err.message || 'Failed to update item');
+      toast.error(err.message || "Failed to update item");
     } finally {
       setSubmitting(false);
     }
@@ -131,7 +137,10 @@ const UpdateItem = () => {
     <div className="container mx-auto px-4 py-8 max-w-3xl">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Update Item</h1>
 
-      <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white shadow-md rounded-lg p-6"
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {/* Post Type */}
           <div className="mb-4">
@@ -142,7 +151,7 @@ const UpdateItem = () => {
                   type="radio"
                   name="postType"
                   value="lost"
-                  checked={formData.postType === 'lost'}
+                  checked={formData.postType === "lost"}
                   onChange={handleChange}
                   className="form-radio text-blue-600"
                 />
@@ -153,7 +162,7 @@ const UpdateItem = () => {
                   type="radio"
                   name="postType"
                   value="found"
-                  checked={formData.postType === 'found'}
+                  checked={formData.postType === "found"}
                   onChange={handleChange}
                   className="form-radio text-blue-600"
                 />
@@ -164,7 +173,9 @@ const UpdateItem = () => {
 
           {/* Status */}
           <div className="mb-4">
-            <label htmlFor="status" className="block text-gray-700 mb-2">Status</label>
+            <label htmlFor="status" className="block text-gray-700 mb-2">
+              Status
+            </label>
             <select
               id="status"
               name="status"
@@ -181,7 +192,9 @@ const UpdateItem = () => {
 
         {/* Title */}
         <div className="mb-4">
-          <label htmlFor="title" className="block text-gray-700 mb-2">Title*</label>
+          <label htmlFor="title" className="block text-gray-700 mb-2">
+            Title*
+          </label>
           <input
             type="text"
             id="title"
@@ -195,7 +208,9 @@ const UpdateItem = () => {
 
         {/* Description */}
         <div className="mb-4">
-          <label htmlFor="description" className="block text-gray-700 mb-2">Description*</label>
+          <label htmlFor="description" className="block text-gray-700 mb-2">
+            Description*
+          </label>
           <textarea
             id="description"
             name="description"
@@ -210,7 +225,9 @@ const UpdateItem = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {/* Category */}
           <div className="mb-4">
-            <label htmlFor="category" className="block text-gray-700 mb-2">Category*</label>
+            <label htmlFor="category" className="block text-gray-700 mb-2">
+              Category*
+            </label>
             <select
               id="category"
               name="category"
@@ -220,15 +237,19 @@ const UpdateItem = () => {
               className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Select a category</option>
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
               ))}
             </select>
           </div>
 
           {/* Location */}
           <div className="mb-4">
-            <label htmlFor="location" className="block text-gray-700 mb-2">Location*</label>
+            <label htmlFor="location" className="block text-gray-700 mb-2">
+              Location*
+            </label>
             <input
               type="text"
               id="location"
@@ -244,7 +265,9 @@ const UpdateItem = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           {/* Date */}
           <div className="mb-4">
-            <label htmlFor="date" className="block text-gray-700 mb-2">Date*</label>
+            <label htmlFor="date" className="block text-gray-700 mb-2">
+              Date*
+            </label>
             <input
               type="date"
               id="date"
@@ -258,7 +281,9 @@ const UpdateItem = () => {
 
           {/* Thumbnail */}
           <div className="mb-4">
-            <label htmlFor="thumbnail" className="block text-gray-700 mb-2">Image URL</label>
+            <label htmlFor="thumbnail" className="block text-gray-700 mb-2">
+              Image URL
+            </label>
             <input
               type="url"
               id="thumbnail"
@@ -274,7 +299,9 @@ const UpdateItem = () => {
         {/* Contact Info (read-only) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div className="mb-4">
-            <label htmlFor="contactName" className="block text-gray-700 mb-2">Your Name</label>
+            <label htmlFor="contactName" className="block text-gray-700 mb-2">
+              Your Name
+            </label>
             <input
               type="text"
               id="contactName"
@@ -285,7 +312,9 @@ const UpdateItem = () => {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="contactEmail" className="block text-gray-700 mb-2">Your Email</label>
+            <label htmlFor="contactEmail" className="block text-gray-700 mb-2">
+              Your Email
+            </label>
             <input
               type="email"
               id="contactEmail"
@@ -323,7 +352,7 @@ const UpdateItem = () => {
             disabled={submitting}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {submitting ? 'Updating...' : 'Update Item'}
+            {submitting ? "Updating..." : "Update Item"}
           </button>
         </div>
       </form>

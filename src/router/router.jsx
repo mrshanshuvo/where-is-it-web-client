@@ -41,7 +41,7 @@ const router = createBrowserRouter([
 
       // User protected routes
       {
-        path: "add-items",
+        path: "add-item",
         element: (
           <PrivateRoute>
             <AddItems />
@@ -78,8 +78,8 @@ const router = createBrowserRouter([
           <PrivateRoute>
             <UpdateItem />
           </PrivateRoute>
-        )
-      }
+        ),
+      },
     ],
   },
 ]);

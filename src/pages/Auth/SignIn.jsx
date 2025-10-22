@@ -20,10 +20,10 @@ const SignIn = () => {
 
     try {
       await signInUser(email, password);
-      toast.success("Login successful");
+      toast.success("Sign in successful");
       navigate(from, { replace: true });
     } catch (error) {
-      toast.error(error.message || "Login failed");
+      toast.error(error.message || "Sign in failed");
     } finally {
       setLoading(false);
       form.reset();
@@ -35,7 +35,9 @@ const SignIn = () => {
       <h2 className="text-3xl text-center font-semibold mb-6">Sign In</h2>
       <form onSubmit={handleSignIn}>
         <div className="mb-4">
-          <label className="block mb-1" htmlFor="email">Email</label>
+          <label className="block mb-1" htmlFor="email">
+            Email
+          </label>
           <input
             type="email"
             name="email"
@@ -46,7 +48,9 @@ const SignIn = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-1" htmlFor="password">Password</label>
+          <label className="block mb-1" htmlFor="password">
+            Password
+          </label>
           <input
             type="password"
             name="password"

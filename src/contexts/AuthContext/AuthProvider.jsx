@@ -9,63 +9,46 @@ import {
   signOut,
 } from "firebase/auth";
 import { auth } from "../../firebase/firebase.config";
-import axios from "axios";
+import { axiosInstance } from "../../api/api";
 
 const googleProvider = new GoogleAuthProvider();
 
 const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
+  const [firebaseUser, setFirebaseUser] = useState(null); // Firebase auth info
+  const [user, setUser] = useState(null); // Backend user info
   const [authChecked, setAuthChecked] = useState(false);
 
-  // Common function to handle backend authentication
+  // Backend authentication
   const handleBackendAuth = async (firebaseUser) => {
-    try {
-      const idToken = await firebaseUser.getIdToken();
-      const displayName = firebaseUser.displayName || "";
+    const idToken = await firebaseUser.getIdToken();
 
-      // Send to backend for verification and session creation
-      const response = await axios.post(
-        "https://whereisit-server-inky.vercel.app/api/users/firebase-login",
-        { idToken, name: displayName },
-        { withCredentials: true }
-      );
+    const res = await axiosInstance.post(
+      "/users/firebase-login",
+      { idToken },
+      { withCredentials: true }
+    );
 
-      // Return combined user data
-      return {
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-        name: displayName,
-        // Include any additional data from backend if needed
-        ...(response.data.user || {}),
-      };
-    } catch (error) {
-      console.error("Backend auth error:", error);
-      throw error;
-    }
+    // Return the backend user directly
+    return res.data.user;
   };
-
   const createUser = (email, password) => {
     setLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
   };
 
-  const updateUserProfile = (profile) => {
-    if (!auth.currentUser) return Promise.reject("No user logged in");
-    return auth.currentUser.updateProfile(profile);
-  };
-
   const signInUser = async (email, password) => {
     setLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const userData = await handleBackendAuth(userCredential.user);
-      setUser(userData);
-      return userData;
-    } catch (error) {
-      console.error("Login error:", error);
-      setUser(null);
-      throw error;
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const backendUser = await handleBackendAuth(userCredential.user);
+      setFirebaseUser(userCredential.user);
+      setUser(backendUser);
+      return backendUser;
     } finally {
       setLoading(false);
     }
@@ -75,13 +58,10 @@ const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      const userData = await handleBackendAuth(result.user);
-      setUser(userData);
-      return userData;
-    } catch (error) {
-      console.error("Google sign-in error:", error);
-      setUser(null);
-      throw error;
+      const backendUser = await handleBackendAuth(result.user);
+      setFirebaseUser(result.user);
+      setUser(backendUser);
+      return backendUser;
     } finally {
       setLoading(false);
     }
@@ -91,28 +71,23 @@ const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       await signOut(auth);
-      await axios.post(
-        "https://whereisit-server-inky.vercel.app/api/users/logout",
-        {},
-        { withCredentials: true }
-      );
+      await axiosInstance.post("/users/logout", {}, { withCredentials: true });
+      setFirebaseUser(null);
       setUser(null);
-    } catch (error) {
-      console.error("Logout error:", error);
-      throw error;
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    const unSubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setFirebaseUser(currentUser || null);
       if (currentUser) {
         try {
-          const userData = await handleBackendAuth(currentUser);
-          setUser(userData);
-        } catch (error) {
-          console.error("Error syncing auth with backend:", error);
+          const backendUser = await handleBackendAuth(currentUser);
+          setUser(backendUser);
+        } catch (err) {
+          console.error("Backend sync error:", err);
           setUser(null);
         }
       } else {
@@ -122,20 +97,23 @@ const AuthProvider = ({ children }) => {
       setLoading(false);
     });
 
-    return () => unSubscribe();
+    return () => unsubscribe();
   }, []);
 
   const authInfo = {
     loading: loading || !authChecked,
-    user,
+    firebaseUser, // Use for token
+    user, // Use for app logic
+    setUser, // Important for SocialLogin
     createUser,
     signInUser,
     signInWithGoogle,
     signOutUser,
-    updateUserProfile,
   };
 
-  return <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
+  );
 };
 
 export default AuthProvider;

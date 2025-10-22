@@ -1,32 +1,32 @@
-import React, { useContext, useState } from 'react';
-import { Link, useNavigate } from 'react-router';
-import Lottie from 'lottie-react';
-import registerLottie from '../../assets/lotties/register.json';
-import { AuthContext } from '../../contexts/AuthContext/AuthContext';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import axios from 'axios';
+import React, { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router";
+import Lottie from "lottie-react";
+import registerLottie from "../../assets/lotties/register.json";
+import { AuthContext } from "../../contexts/AuthContext/AuthContext";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import axios from "axios";
 
 const Register = () => {
   const { createUser, updateUserProfile } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordError, setPasswordError] = useState('');
+  const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
 
   const validatePassword = (password) => {
     const errors = [];
     if (password.length < 6) {
-      errors.push('Password must be at least 6 characters');
+      errors.push("Password must be at least 6 characters");
     }
     if (!/[A-Z]/.test(password)) {
-      errors.push('Password must contain at least one uppercase letter');
+      errors.push("Password must contain at least one uppercase letter");
     }
     if (!/[a-z]/.test(password)) {
-      errors.push('Password must contain at least one lowercase letter');
+      errors.push("Password must contain at least one lowercase letter");
     }
-    return errors.length ? errors.join('. ') : null;
+    return errors.length ? errors.join(". ") : null;
   };
 
   const handleRegister = async (e) => {
@@ -46,22 +46,28 @@ const Register = () => {
       setLoading(false);
       return;
     }
-    setPasswordError('');
+    setPasswordError("");
 
     try {
       const { user } = await createUser(email, password);
-      await updateUserProfile({ displayName: name, photoURL: photoURL || null });
+      await updateUserProfile({
+        displayName: name,
+        photoURL: photoURL || null,
+      });
 
       // Get Firebase ID token and send to backend to get JWT cookie
       const idToken = await user.getIdToken();
-      await axios.post("https://whereisit-server-inky.vercel.app/api/users/firebase-login", { idToken }, { withCredentials: true });
+      await axios.post(
+        "http://localhost:5000/api/users/firebase-login",
+        { idToken },
+        { withCredentials: true }
+      );
 
-      toast.success('Registration successful! Welcome to WhereIsIt');
-      navigate('/');
+      toast.success("Registration successful! Welcome to WhereIsIt");
+      navigate("/");
     } catch (error) {
-      toast.error(error.message || 'Registration failed. Please try again.');
-    }
-    finally {
+      toast.error(error.message || "Registration failed. Please try again.");
+    } finally {
       setLoading(false);
     }
   };
@@ -77,13 +83,17 @@ const Register = () => {
         {/* Registration Form */}
         <div className="card flex-shrink-0 w-full max-w-md shadow-xl bg-white">
           <div className="card-body p-6 sm:p-8">
-            <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Create Account</h1>
+            <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
+              Create Account
+            </h1>
 
             <form onSubmit={handleRegister} className="space-y-4">
               {/* Name Input */}
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium text-gray-700">Full Name</span>
+                  <span className="label-text font-medium text-gray-700">
+                    Full Name
+                  </span>
                 </label>
                 <input
                   type="text"
@@ -98,7 +108,9 @@ const Register = () => {
               {/* Email Input */}
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium text-gray-700">Email</span>
+                  <span className="label-text font-medium text-gray-700">
+                    Email
+                  </span>
                 </label>
                 <input
                   type="email"
@@ -113,7 +125,9 @@ const Register = () => {
               {/* Photo URL Input */}
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium text-gray-700">Profile Photo URL</span>
+                  <span className="label-text font-medium text-gray-700">
+                    Profile Photo URL
+                  </span>
                 </label>
                 <input
                   type="url"
@@ -127,7 +141,9 @@ const Register = () => {
               {/* Password Input */}
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-medium text-gray-700">Password</span>
+                  <span className="label-text font-medium text-gray-700">
+                    Password
+                  </span>
                 </label>
                 <div className="relative">
                   <input
@@ -137,7 +153,7 @@ const Register = () => {
                     className="input input-bordered w-full focus:ring-2 focus:ring-blue-500 pr-10"
                     required
                     autoComplete="new-password"
-                    onChange={() => setPasswordError('')}
+                    onChange={() => setPasswordError("")}
                   />
                   <button
                     type="button"
@@ -165,13 +181,17 @@ const Register = () => {
               >
                 {loading ? (
                   <span className="loading loading-spinner"></span>
-                ) : 'Register'}
+                ) : (
+                  "Register"
+                )}
               </button>
             </form>
 
             {/* Login Link */}
             <div className="text-center mt-6">
-              <span className="text-sm text-gray-600">Already have an account? </span>
+              <span className="text-sm text-gray-600">
+                Already have an account?{" "}
+              </span>
               <Link
                 to="/sign-in"
                 className="text-blue-600 hover:text-blue-800 font-medium"

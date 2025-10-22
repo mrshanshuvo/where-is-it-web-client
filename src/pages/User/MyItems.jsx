@@ -1,207 +1,372 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
-import { auth } from '../../firebase/firebase.config';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import LoadingSpinner from '../../components/LoadingSpinner';
-import ErrorMessage from '../../components/ErrorMessage';
-import { FiEdit, FiTrash2, FiPlus } from 'react-icons/fi';
+import React, { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import Swal from "sweetalert2";
+import { AuthContext } from "../../contexts/AuthContext/AuthContext";
+import { axiosInstance } from "../../api/api";
+import LoadingSpinner from "../../components/LoadingSpinner";
+import ErrorMessage from "../../components/ErrorMessage";
+import { FiEdit, FiTrash2, FiPlus, FiEye, FiPackage } from "react-icons/fi";
 
 const MyItems = () => {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
-  const navigate = useNavigate();
 
-  // Fetch user's items
-  useEffect(() => {
-    const fetchMyItems = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+  const {
+    data: items = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["myItems", user?.uid],
+    enabled: !!user,
+    queryFn: async () => {
+      const res = await axiosInstance.get("/debug/my-items", {
+        withCredentials: true,
+      });
+      return res.data.sampleItems || res.data.items || res.data;
+    },
+  });
 
-        const user = auth.currentUser;
-        if (!user) {
-          throw new Error('Please sign in to view your items');
-        }
-
-        const token = await user.getIdToken();
-        const response = await fetch('https://whereisit-server-inky.vercel.app/api/debug/my-items', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include'
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to fetch your items');
-        }
-
-        const data = await response.json();
-        setItems(data.sampleItems || data.items || data); // Handle different response formats
-      } catch (err) {
-        console.error('Fetch error:', err);
-        setError(err.message);
-        toast.error(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMyItems();
-  }, []);
-
-  const handleEdit = (itemId) => {
-    navigate(`/updateItems/${itemId}`);
-  };
+  const handleEdit = (itemId) => navigate(`/updateItems/${itemId}`);
+  const handleView = (itemId) => navigate(`/items/${itemId}`);
 
   const handleDelete = async (itemId) => {
     if (isDeleting) return;
-    if (!window.confirm('Are you sure you want to delete this item?')) return;
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
+      background: "#fff",
+      iconColor: "#e53e3e",
+      customClass: {
+        confirmButton: "px-6 py-2 rounded-lg",
+        cancelButton: "px-6 py-2 rounded-lg",
+      },
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       setIsDeleting(true);
       setDeleteId(itemId);
 
-      const user = auth.currentUser;
-      if (!user) throw new Error('Please sign in to delete items');
-
-      const token = await user.getIdToken();
-      const response = await fetch(`https://whereisit-server-inky.vercel.app/api/items/${itemId}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      await axiosInstance.delete(`/items/${itemId}`, {
+        withCredentials: true,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to delete item');
-      }
+      Swal.fire({
+        title: "Deleted!",
+        text: "Your item has been deleted.",
+        icon: "success",
+        confirmButtonColor: "#3085d6",
+        background: "#fff",
+        iconColor: "#10b981",
+        timer: 2000,
+        showConfirmButton: false,
+      });
 
-      setItems(prevItems => prevItems.filter(item => item._id !== itemId));
-      toast.success('Item deleted successfully');
+      queryClient.invalidateQueries(["myItems", user?.uid]);
     } catch (err) {
-      console.error('Delete error:', err);
-      toast.error(err.message || 'Error deleting item');
+      console.error("Delete error:", err);
+
+      Swal.fire({
+        title: "Error!",
+        text: err?.response?.data?.message || "Failed to delete item",
+        icon: "error",
+        confirmButtonColor: "#3085d6",
+        background: "#fff",
+        iconColor: "#e53e3e",
+      });
     } finally {
       setIsDeleting(false);
       setDeleteId(null);
     }
   };
 
-  const handleCreateNew = () => {
-    navigate('/create-item');
-  };
+  const handleCreateNew = () => navigate("/add-item");
 
-  if (loading) return <LoadingSpinner className="mt-8" />;
-  if (error) return <ErrorMessage message={error} className="mt-8" />;
+  if (!user)
+    return <ErrorMessage message="Please sign in to view your items" />;
+
+  if (isLoading) return <LoadingSpinner className="mt-8" />;
+  if (error) return <ErrorMessage message={error.message} className="mt-8" />;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">My Posted Items</h1>
-        <button
-          onClick={handleCreateNew}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-        >
-          <FiPlus className="mr-2" />
-          Add New Item
-        </button>
-      </div>
-
-      {(!items || items.length === 0) ? (
-        <div className="bg-white rounded-lg shadow p-6 text-center">
-          <h3 className="text-lg font-medium text-gray-900">No items found</h3>
-          <p className="mt-2 text-gray-600">
-            You haven't posted any items yet. Click the button above to create your first post.
-          </p>
-        </div>
-      ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Item
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Type
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date Posted
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {items.map((item) => (
-                  <tr key={item._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        {item.thumbnail && (
-                          <div className="flex-shrink-0 h-10 w-10">
-                            <img className="h-10 w-10 rounded-full object-cover" src={item.thumbnail} alt={item.title} />
-                          </div>
-                        )}
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">{item.title}</div>
-                          <div className="text-sm text-gray-500">{item.category}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.postType === 'found' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                        {item.postType}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.status === 'recovered' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
-                        {item.status || 'active'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(item.createdAt || item.date).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        onClick={() => handleEdit(item._id)}
-                        className="text-indigo-600 hover:text-indigo-900 mr-4"
-                        title="Edit"
-                      >
-                        <FiEdit className="h-5 w-5" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item._id)}
-                        className="text-red-600 hover:text-red-900"
-                        disabled={isDeleting && deleteId === item._id}
-                        title="Delete"
-                      >
-                        {isDeleting && deleteId === item._id ? (
-                          <LoadingSpinner size="small" />
-                        ) : (
-                          <FiTrash2 className="h-5 w-5" />
-                        )}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-6 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+                My Posted Items
+              </h1>
+              <p className="text-gray-600 text-sm sm:text-base">
+                Manage your lost and found items
+              </p>
+            </div>
+            <button
+              onClick={handleCreateNew}
+              className="flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium text-sm sm:text-base w-full sm:w-auto"
+            >
+              <FiPlus className="mr-2 text-lg" />
+              Add New Item
+            </button>
           </div>
         </div>
-      )}
+
+        {/* Empty State */}
+        {!items || items.length === 0 ? (
+          <div className="bg-white rounded-2xl shadow-lg p-8 text-center max-w-2xl mx-auto">
+            <div className="w-20 h-20 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+              <FiPackage className="text-3xl text-blue-600" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              No items posted yet
+            </h3>
+            <p className="text-gray-600 mb-6 max-w-md mx-auto">
+              Start helping others by posting your first lost or found item.
+              Your post could reunite someone with their belongings.
+            </p>
+            <button
+              onClick={handleCreateNew}
+              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
+              <FiPlus className="mr-2" />
+              Create Your First Post
+            </button>
+          </div>
+        ) : (
+          <>
+            {/* Mobile Cards View */}
+            <div className="block lg:hidden space-y-4">
+              {items.map((item) => (
+                <div
+                  key={item._id}
+                  className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 p-6 border border-gray-100"
+                >
+                  <div className="flex items-start space-x-4">
+                    {item.thumbnail && (
+                      <img
+                        className="h-16 w-16 rounded-xl object-cover flex-shrink-0"
+                        src={item.thumbnail}
+                        alt={item.title}
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-semibold text-gray-900 truncate">
+                        {item.title}
+                      </h3>
+                      <p className="text-gray-600 text-sm mt-1">
+                        {item.category}
+                      </p>
+
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            item.postType === "found"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {item.postType}
+                        </span>
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            item.status === "recovered"
+                              ? "bg-blue-100 text-blue-800"
+                              : "bg-gray-100 text-gray-800"
+                          }`}
+                        >
+                          {item.status || "active"}
+                        </span>
+                      </div>
+
+                      <p className="text-gray-500 text-sm mt-3">
+                        Posted{" "}
+                        {new Date(
+                          item.createdAt || item.date
+                        ).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end space-x-3 mt-4 pt-4 border-t border-gray-100">
+                    <button
+                      onClick={() => handleView(item._id)}
+                      className="flex items-center px-3 py-2 text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium"
+                      title="View"
+                    >
+                      <FiEye className="mr-1" />
+                      View
+                    </button>
+                    <button
+                      onClick={() => handleEdit(item._id)}
+                      className="flex items-center px-3 py-2 text-gray-600 hover:text-indigo-600 transition-colors text-sm font-medium"
+                      title="Edit"
+                    >
+                      <FiEdit className="mr-1" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item._id)}
+                      disabled={isDeleting && deleteId === item._id}
+                      className="flex items-center px-3 py-2 text-gray-600 hover:text-red-600 transition-colors text-sm font-medium disabled:opacity-50"
+                      title="Delete"
+                    >
+                      {isDeleting && deleteId === item._id ? (
+                        <LoadingSpinner size="small" />
+                      ) : (
+                        <>
+                          <FiTrash2 className="mr-1" />
+                          Delete
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden lg:block bg-white rounded-2xl shadow-lg overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-8 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Item
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Type
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Date Posted
+                      </th>
+                      <th className="px-8 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {items.map((item) => (
+                      <tr
+                        key={item._id}
+                        className="hover:bg-blue-50 transition-colors duration-150"
+                      >
+                        <td className="px-8 py-5 whitespace-nowrap">
+                          <div className="flex items-center">
+                            {item.thumbnail && (
+                              <Link to={`/items/${item._id}`}>
+                                <img
+                                  className="h-12 w-12 rounded-lg object-cover shadow-sm"
+                                  src={item.thumbnail}
+                                  alt={item.title}
+                                />
+                              </Link>
+                            )}
+                            <div className="ml-4">
+                              <Link to={`/items/${item._id}`}>
+                                <div className="text-sm font-semibold text-gray-900 hover:text-blue-600 transition-colors">
+                                  {item.title}
+                                </div>
+                              </Link>
+                              <div className="text-sm text-gray-500 mt-1">
+                                {item.category}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          <span
+                            className={`px-3 py-1 inline-flex text-sm font-medium rounded-full ${
+                              item.postType === "found"
+                                ? "bg-green-100 text-green-800 border border-green-200"
+                                : "bg-red-100 text-red-800 border border-red-200"
+                            }`}
+                          >
+                            {item.postType}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap">
+                          <span
+                            className={`px-3 py-1 inline-flex text-sm font-medium rounded-full ${
+                              item.status === "recovered"
+                                ? "bg-blue-100 text-blue-800 border border-blue-200"
+                                : "bg-gray-100 text-gray-800 border border-gray-200"
+                            }`}
+                          >
+                            {item.status || "active"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5 whitespace-nowrap text-sm text-gray-600">
+                          {new Date(
+                            item.createdAt || item.date
+                          ).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </td>
+                        <td className="px-8 py-5 whitespace-nowrap text-right text-sm font-medium">
+                          <div className="flex justify-end space-x-2">
+                            <button
+                              onClick={() => handleView(item._id)}
+                              className="text-gray-400 hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-blue-50"
+                              title="View"
+                            >
+                              <FiEye className="h-5 w-5" />
+                            </button>
+                            <button
+                              onClick={() => handleEdit(item._id)}
+                              className="text-gray-400 hover:text-indigo-600 transition-colors p-2 rounded-lg hover:bg-indigo-50"
+                              title="Edit"
+                            >
+                              <FiEdit className="h-5 w-5" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(item._id)}
+                              disabled={isDeleting && deleteId === item._id}
+                              className="text-gray-400 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                              title="Delete"
+                            >
+                              {isDeleting && deleteId === item._id ? (
+                                <LoadingSpinner size="small" />
+                              ) : (
+                                <FiTrash2 className="h-5 w-5" />
+                              )}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Stats Footer */}
+            <div className="mt-6 text-center">
+              <p className="text-gray-600 text-sm">
+                Showing {items.length} item{items.length !== 1 ? "s" : ""}
+              </p>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };

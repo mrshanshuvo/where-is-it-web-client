@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
-import { auth } from '../../firebase/firebase.config';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import LoadingSpinner from '../../components/LoadingSpinner';
-import ErrorMessage from '../../components/ErrorMessage';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
+import { auth } from "../../firebase/firebase.config";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import LoadingSpinner from "../../components/LoadingSpinner";
+import ErrorMessage from "../../components/ErrorMessage";
 
 const MyProfile = () => {
   const [userData, setUserData] = useState({
-    name: '',
-    email: '',
-    uid: '',
-    isAdmin: false
+    name: "",
+    email: "",
+    uid: "",
+    isAdmin: false,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [stats, setStats] = useState({
     itemsPosted: 0,
     itemsRecovered: 0,
-    itemsFound: 0
+    itemsFound: 0,
   });
   const navigate = useNavigate();
 
@@ -27,64 +27,72 @@ const MyProfile = () => {
       try {
         setLoading(true);
         const user = auth.currentUser;
-        if (!user) throw new Error('Please sign in to view profile');
+        if (!user) throw new Error("Please sign in to view profile");
 
         const token = await user.getIdToken();
 
         // Fetch profile data
-        const profileResponse = await fetch('https://whereisit-server-inky.vercel.app/api/users/profile', {
-          headers: {
-            'Authorization': `Bearer ${token}`
+        const profileResponse = await fetch(
+          "http://localhost:5000/api/users/profile",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
-        });
+        );
 
         if (!profileResponse.ok) {
-          throw new Error('Failed to fetch profile data');
+          throw new Error("Failed to fetch profile data");
         }
 
         const profileData = await profileResponse.json();
         setUserData(profileData);
 
         // Fetch user's items count
-        const itemsResponse = await fetch('https://whereisit-server-inky.vercel.app/api/debug/my-items', {
-          headers: {
-            'Authorization': `Bearer ${token}`
+        const itemsResponse = await fetch(
+          "http://localhost:5000/api/debug/my-items",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
-        });
+        );
 
         // Fetch recoveries data
-        const recoveriesResponse = await fetch('https://whereisit-server-inky.vercel.app/api/recoveries', {
-          headers: {
-            'Authorization': `Bearer ${token}`
+        const recoveriesResponse = await fetch(
+          "http://localhost:5000/api/recoveries",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
-        });
+        );
 
         if (itemsResponse.ok) {
           const itemsData = await itemsResponse.json();
-          setStats(prev => ({ ...prev, itemsPosted: itemsData.itemsFound }));
+          setStats((prev) => ({ ...prev, itemsPosted: itemsData.itemsFound }));
         }
 
         if (recoveriesResponse.ok) {
           const recoveriesData = await recoveriesResponse.json();
 
           // Calculate stats from recoveries
-          const recoveredCount = recoveriesData.filter(r =>
-            r.originalOwner.email === user.email
+          const recoveredCount = recoveriesData.filter(
+            (r) => r.originalOwner.email === user.email
           ).length;
 
-          const foundCount = recoveriesData.filter(r =>
-            r.recoveredBy.email === user.email
+          const foundCount = recoveriesData.filter(
+            (r) => r.recoveredBy.email === user.email
           ).length;
 
-          setStats(prev => ({
+          setStats((prev) => ({
             ...prev,
             itemsRecovered: recoveredCount,
-            itemsFound: foundCount
+            itemsFound: foundCount,
           }));
         }
-
       } catch (err) {
-        console.error('Profile fetch error:', err);
+        console.error("Profile fetch error:", err);
         setError(err.message);
         toast.error(err.message);
       } finally {
@@ -98,15 +106,15 @@ const MyProfile = () => {
   const handleLogout = async () => {
     try {
       await auth.signOut();
-      await fetch('https://whereisit-server-inky.vercel.app/api/users/logout', {
-        method: 'POST',
-        credentials: 'include'
+      await fetch("http://localhost:5000/api/users/logout", {
+        method: "POST",
+        credentials: "include",
       });
-      toast.success('Logged out successfully');
-      navigate('/');
+      toast.success("Logged out successfully");
+      navigate("/");
     } catch (err) {
-      console.error('Logout error:', err);
-      toast.error('Failed to logout');
+      console.error("Logout error:", err);
+      toast.error("Failed to logout");
     }
   };
 
@@ -129,7 +137,7 @@ const MyProfile = () => {
                   />
                 ) : (
                   <span className="text-3xl text-blue-600">
-                    {userData.name?.charAt(0).toUpperCase() || 'U'}
+                    {userData.name?.charAt(0).toUpperCase() || "U"}
                   </span>
                 )}
               </div>
@@ -152,15 +160,21 @@ const MyProfile = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-blue-50 p-4 rounded-lg">
               <h3 className="font-medium text-blue-800">Items Posted</h3>
-              <p className="text-3xl font-bold text-blue-600">{stats.itemsPosted}</p>
+              <p className="text-3xl font-bold text-blue-600">
+                {stats.itemsPosted}
+              </p>
             </div>
             <div className="bg-green-50 p-4 rounded-lg">
               <h3 className="font-medium text-green-800">Items Recovered</h3>
-              <p className="text-3xl font-bold text-green-600">{stats.itemsRecovered}</p>
+              <p className="text-3xl font-bold text-green-600">
+                {stats.itemsRecovered}
+              </p>
             </div>
             <div className="bg-purple-50 p-4 rounded-lg">
               <h3 className="font-medium text-purple-800">Items Found</h3>
-              <p className="text-3xl font-bold text-purple-600">{stats.itemsFound}</p>
+              <p className="text-3xl font-bold text-purple-600">
+                {stats.itemsFound}
+              </p>
             </div>
           </div>
         </div>
@@ -170,13 +184,13 @@ const MyProfile = () => {
           <h2 className="text-xl font-semibold mb-4">Account Actions</h2>
           <div className="space-y-3">
             <button
-              onClick={() => navigate('/my-items')}
+              onClick={() => navigate("/my-items")}
               className="w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
             >
               View My Items
             </button>
             <button
-              onClick={() => navigate('/recovered-items')}
+              onClick={() => navigate("/recovered-items")}
               className="w-full text-left px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
             >
               View My Recoveries

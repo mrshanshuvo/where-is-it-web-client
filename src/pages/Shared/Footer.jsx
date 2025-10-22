@@ -1,5 +1,13 @@
 import React from "react";
-import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram, FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
+import {
+  FaFacebookF,
+  FaTwitter,
+  FaLinkedinIn,
+  FaInstagram,
+  FaMapMarkerAlt,
+  FaPhoneAlt,
+  FaEnvelope,
+} from "react-icons/fa";
 
 const Footer = () => {
   return (
@@ -42,30 +50,99 @@ const Footer = () => {
             <div>
               <h6 className="font-semibold text-white mb-5">Quick Links</h6>
               <ul className="space-y-3 text-sm">
-                <li><a href="/" className="hover:text-blue-400 transition">Home</a></li>
-                <li><a href="/lost-items" className="hover:text-blue-400 transition">Lost Items</a></li>
-                <li><a href="/found-items" className="hover:text-blue-400 transition">Found Items</a></li>
-                <li><a href="/report-item" className="hover:text-blue-400 transition">Report Item</a></li>
+                <li>
+                  <a href="/" className="hover:text-blue-400 transition">
+                    Home
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/lost-items"
+                    className="hover:text-blue-400 transition"
+                  >
+                    Lost Items
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/found-items"
+                    className="hover:text-blue-400 transition"
+                  >
+                    Found Items
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/report-item"
+                    className="hover:text-blue-400 transition"
+                  >
+                    Report Item
+                  </a>
+                </li>
               </ul>
             </div>
 
             <div>
               <h6 className="font-semibold text-white mb-5">Support</h6>
               <ul className="space-y-3 text-sm">
-                <li><a href="/faq" className="hover:text-blue-400 transition">FAQ</a></li>
-                <li><a href="/safety-tips" className="hover:text-blue-400 transition">Safety Tips</a></li>
-                <li><a href="/contact" className="hover:text-blue-400 transition">Contact Us</a></li>
-                <li><a href="/feedback" className="hover:text-blue-400 transition">Feedback</a></li>
+                <li>
+                  <a href="/faq" className="hover:text-blue-400 transition">
+                    FAQ
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/safety-tips"
+                    className="hover:text-blue-400 transition"
+                  >
+                    Safety Tips
+                  </a>
+                </li>
+                <li>
+                  <a href="/contact" className="hover:text-blue-400 transition">
+                    Contact Us
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/feedback"
+                    className="hover:text-blue-400 transition"
+                  >
+                    Feedback
+                  </a>
+                </li>
               </ul>
             </div>
 
             <div>
               <h6 className="font-semibold text-white mb-5">Legal</h6>
               <ul className="space-y-3 text-sm">
-                <li><a href="/terms" className="hover:text-blue-400 transition">Terms of Service</a></li>
-                <li><a href="/privacy" className="hover:text-blue-400 transition">Privacy Policy</a></li>
-                <li><a href="/cookie-policy" className="hover:text-blue-400 transition">Cookie Policy</a></li>
-                <li><a href="/community-guidelines" className="hover:text-blue-400 transition">Community Guidelines</a></li>
+                <li>
+                  <a href="/terms" className="hover:text-blue-400 transition">
+                    Terms of Service
+                  </a>
+                </li>
+                <li>
+                  <a href="/privacy" className="hover:text-blue-400 transition">
+                    Privacy Policy
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/cookie-policy"
+                    className="hover:text-blue-400 transition"
+                  >
+                    Cookie Policy
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/community-guidelines"
+                    className="hover:text-blue-400 transition"
+                  >
+                    Community Guidelines
+                  </a>
+                </li>
               </ul>
             </div>
           </nav>
@@ -75,7 +152,9 @@ const Footer = () => {
         <div className="mt-12 border-t border-gray-700 pt-6 flex flex-col md:flex-row justify-between items-center">
           {/* Newsletter */}
           <div className="mb-6 md:mb-0">
-            <h6 className="font-semibold text-white mb-3">Subscribe to our newsletter</h6>
+            <h6 className="font-semibold text-white mb-3">
+              Subscribe to our newsletter
+            </h6>
             <div className="flex">
               <input
                 type="email"
@@ -90,16 +169,32 @@ const Footer = () => {
 
           {/* Social Media */}
           <div className="flex justify-center space-x-6">
-            <a href="#" aria-label="Facebook" className="text-gray-400 hover:text-blue-400 transition">
+            <a
+              href="#"
+              aria-label="Facebook"
+              className="text-gray-400 hover:text-blue-400 transition"
+            >
               <FaFacebookF size={20} />
             </a>
-            <a href="#" aria-label="Twitter" className="text-gray-400 hover:text-blue-300 transition">
+            <a
+              href="#"
+              aria-label="Twitter"
+              className="text-gray-400 hover:text-blue-300 transition"
+            >
               <FaTwitter size={20} />
             </a>
-            <a href="#" aria-label="LinkedIn" className="text-gray-400 hover:text-blue-500 transition">
+            <a
+              href="#"
+              aria-label="LinkedIn"
+              className="text-gray-400 hover:text-blue-500 transition"
+            >
               <FaLinkedinIn size={20} />
             </a>
-            <a href="#" aria-label="Instagram" className="text-gray-400 hover:text-pink-400 transition">
+            <a
+              href="#"
+              aria-label="Instagram"
+              className="text-gray-400 hover:text-pink-400 transition"
+            >
               <FaInstagram size={20} />
             </a>
           </div>
