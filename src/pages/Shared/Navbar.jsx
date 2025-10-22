@@ -7,6 +7,7 @@ import {
   FaUser,
   FaSignOutAlt,
   FaLock,
+  FaCheckCircle,
 } from "react-icons/fa";
 import { AuthContext } from "../../contexts/AuthContext/AuthContext";
 import Swal from "sweetalert2";
@@ -22,11 +23,11 @@ const Navbar = () => {
     signOutUser()
       .then(() => {
         Swal.fire({
-          position: "top-end",
           icon: "success",
           title: "Logged out successfully",
           showConfirmButton: false,
           timer: 1500,
+          position: "center",
         });
       })
       .catch(console.error);
@@ -75,6 +76,22 @@ const Navbar = () => {
           <FaSearch className="text-lg" /> Lost & Found Items
         </NavLink>
       </li>
+      <li>
+        <NavLink
+          to="/recovered-items"
+          onClick={() => setDropdownOpen(false)}
+          className={({ isActive }) =>
+            `flex items-center gap-2 px-2 py-1 rounded-md transition-colors ${
+              isActive
+                ? "text-blue-600 font-bold bg-blue-50"
+                : "hover:bg-gray-100"
+            }`
+          }
+        >
+          <FaCheckCircle className="text-lg" /> Recovered Items
+        </NavLink>
+      </li>
+
       {user?.role === "admin" && (
         <>
           <li>
@@ -167,6 +184,10 @@ const Navbar = () => {
                   <img
                     src={user.photoURL}
                     alt={user.name}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.style.display = "none"; // hide broken image
+                    }}
                     className="rounded-full w-full h-full object-cover cursor-pointer"
                   />
                 ) : (
@@ -207,11 +228,11 @@ const Navbar = () => {
                 </li>
                 <li>
                   <NavLink
-                    to="/recovered-items"
+                    to="/my-recovered-items"
                     onClick={() => setProfileDropdownOpen(false)}
                     className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-gray-100"
                   >
-                    <FaLock /> Recovered Items
+                    <FaLock /> My Recovered Items
                   </NavLink>
                 </li>
                 <li>

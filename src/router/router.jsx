@@ -5,13 +5,14 @@ import Register from "../pages/Auth/Register";
 import SignIn from "../pages/Auth/SignIn";
 import ItemDetails from "../pages/Items/ItemDetails";
 import PrivateRoute from "./PrivateRoute";
-import RecoveredItems from "../pages/User/RecoveredItems";
 import NotFound from "../pages/Shared/NotFound";
 import LostFoundItems from "../pages/Items/LostFoundItems";
 import AddItems from "../pages/Items/AddItems";
 import MyProfile from "../pages/User/MyProfile";
 import MyItems from "../pages/User/MyItems";
 import UpdateItem from "../pages/User/UpdateItem";
+import MyRecoveredItems from "../pages/User/MyRecoveredItems";
+import RecoveredItems from "../pages/RecoveredItems/RecoveredItems";
 
 const router = createBrowserRouter([
   {
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
         loader: ({ params }) =>
           fetch(`${import.meta.env.VITE_API_URL}/items/${params.id}`),
       },
+      {
+        path: "recovered-items",
+        Component: RecoveredItems,
+      },
 
       // User protected routes
       {
@@ -57,10 +62,10 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "recovered-items",
+        path: "my-recovered-items",
         element: (
           <PrivateRoute>
-            <RecoveredItems />
+            <MyRecoveredItems />
           </PrivateRoute>
         ),
       },

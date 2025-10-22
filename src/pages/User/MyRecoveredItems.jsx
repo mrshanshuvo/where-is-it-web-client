@@ -4,7 +4,7 @@ import { auth } from "../../firebase/firebase.config";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const RecoveredItems = () => {
+const MyRecoveredItems = () => {
   const [recoveries, setRecoveries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -162,4 +162,4 @@ const RecoveredItems = () => {
   );
 };
 
-export default RecoveredItems;
+export default MyRecoveredItems;

@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "../../api/api";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
-const LostFoundItems = () => {
+const RecoveredItems = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
@@ -16,7 +16,7 @@ const LostFoundItems = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
 
-  // ✅ Fetch items using TanStack Query + axiosInstance
+  // Fetch items
   const {
     data: items = [],
     isLoading,
@@ -26,10 +26,9 @@ const LostFoundItems = () => {
     queryKey: ["items"],
     queryFn: async () => {
       const res = await axiosInstance.get("/items");
-      // Sort by date (newest first)
       return res.data.sort((a, b) => new Date(b.date) - new Date(a.date));
     },
-    staleTime: 1000 * 60 * 3, // 3 min cache
+    staleTime: 1000 * 60 * 3,
   });
 
   const handleViewDetails = (itemId) => navigate(`/items/${itemId}`);
@@ -45,9 +44,9 @@ const LostFoundItems = () => {
     setCurrentPage(1);
   };
 
-  // ✅ Filtering logic
+  // Only recovered items + filtering
   const filteredItems = items
-    .filter((item) => item.status !== "recovered") // ✅ exclude recovered items
+    .filter((item) => item.status === "recovered")
     .filter((item) => {
       const matchesSearch =
         item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -76,7 +75,7 @@ const LostFoundItems = () => {
     Boolean
   );
 
-  // ✅ Pagination
+  // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
@@ -94,10 +93,10 @@ const LostFoundItems = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
-        Lost & Found Items
+        Recovered Items
       </h1>
 
-      {/* 🔍 Search + Filters */}
+      {/* Search + Filters */}
       <div className="mb-8 bg-white p-4 rounded-lg shadow-md">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-grow">
@@ -156,19 +155,17 @@ const LostFoundItems = () => {
         </div>
       </div>
 
-      {/* 📊 Results count */}
+      {/* Results count */}
       <div className="mb-4 text-gray-600">
         Showing {filteredItems.length === 0 ? 0 : indexOfFirstItem + 1}–
         {Math.min(indexOfLastItem, filteredItems.length)} of{" "}
         {filteredItems.length} items
       </div>
 
-      {/* 🧩 Items Grid */}
+      {/* Items Grid */}
       {filteredItems.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-lg shadow">
-          <p className="text-gray-500 text-lg">
-            No items match your search criteria.
-          </p>
+          <p className="text-gray-500 text-lg">No recovered items found.</p>
           <button
             onClick={() => {
               setSearchTerm("");
@@ -185,7 +182,7 @@ const LostFoundItems = () => {
             {currentItems.map((item) => (
               <div
                 key={item._id}
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 flex flex-col"
+                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col"
               >
                 <div className="flex justify-between items-center p-3 bg-gray-100 border-b">
                   <span
@@ -198,6 +195,9 @@ const LostFoundItems = () => {
                     {item.postType}
                   </span>
                   <span className="text-xs text-gray-500">{item.category}</span>
+                  <span className="text-xs font-bold uppercase px-2 py-1 rounded bg-yellow-200 text-yellow-800">
+                    Recovered
+                  </span>
                 </div>
 
                 {item.thumbnail && (
@@ -235,7 +235,7 @@ const LostFoundItems = () => {
             ))}
           </div>
 
-          {/* 📄 Pagination */}
+          {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex justify-center mt-8">
               <nav className="flex items-center gap-1">
@@ -281,4 +281,4 @@ const LostFoundItems = () => {
   );
 };
 
-export default LostFoundItems;
+export default RecoveredItems;
