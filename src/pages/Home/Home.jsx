@@ -5,6 +5,7 @@ import LatestItemsSection from "./LatestItemsSection";
 import StatsSection from "./StatsSection";
 import HowItWorks from "./HowItWorks";
 import { motion } from "framer-motion";
+import Newsletter from "./Newsletter";
 
 const Home = () => {
   return (
@@ -39,6 +40,17 @@ const Home = () => {
         className="my-12"
       >
         <HowItWorks />
+      </motion.section>
+
+      {/* Newsletter Subscription Section */}
+      <motion.section
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.4 }}
+        className="my-12"
+      >
+        <Newsletter />
       </motion.section>
     </div>
   );

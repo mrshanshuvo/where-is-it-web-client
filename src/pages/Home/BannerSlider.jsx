@@ -28,14 +28,14 @@ const BannerSlider = () => {
 
   if (isLoading)
     return (
-      <div className="h-[400px] md:h-[550px] flex items-center justify-center text-gray-500 text-lg">
+      <div className="h-[300px] sm:h-[400px] md:h-[500px] flex items-center justify-center text-gray-500 text-lg">
         Loading slides...
       </div>
     );
 
   if (isError)
     return (
-      <div className="h-[400px] md:h-[550px] flex items-center justify-center text-red-500 text-lg">
+      <div className="h-[300px] sm:h-[400px] md:h-[500px] flex items-center justify-center text-red-500 text-lg">
         Failed to load slides: {error.message}
       </div>
     );
@@ -51,10 +51,10 @@ const BannerSlider = () => {
         loop
         effect="fade"
         autoplay={{ delay: 3000, disableOnInteraction: false }}
-        speed={400}
+        speed={500}
         pagination={{ clickable: true }}
         navigation
-        className="h-[400px] md:h-[550px]"
+        className="h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px]"
       >
         {slides.map(
           ({ title, description, bgImage, actionText, actionLink }, idx) => (
@@ -69,18 +69,18 @@ const BannerSlider = () => {
                   draggable={false}
                 />
                 {/* Overlay */}
-                <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]" />
+                <div className="absolute inset-0 bg-black/25 backdrop-blur-[2px]" />
                 {/* Content */}
-                <div className="relative z-10 px-6 md:px-10 max-w-3xl text-center text-white">
+                <div className="relative z-10 px-4 sm:px-6 md:px-10 max-w-3xl text-center text-white">
                   <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
                   >
-                    <h2 className="text-3xl md:text-5xl font-extrabold mb-4 drop-shadow-lg">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-3 sm:mb-4 drop-shadow-lg">
                       {title}
                     </h2>
-                    <p className="text-base md:text-lg font-medium mb-6 leading-relaxed drop-shadow-md">
+                    <p className="text-sm sm:text-base md:text-lg lg:text-xl font-medium mb-4 sm:mb-6 leading-relaxed drop-shadow-md">
                       {description}
                     </p>
                     {actionText && actionLink && (
@@ -88,7 +88,7 @@ const BannerSlider = () => {
                         href={actionLink}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className="inline-block px-7 py-3 bg-white text-blue-600 rounded-full font-semibold shadow-md hover:shadow-lg transition-transform duration-300 focus:outline-none focus:ring-4 focus:ring-blue-300"
+                        className="inline-block px-6 sm:px-7 py-2 sm:py-3 bg-white text-blue-600 rounded-full font-semibold shadow-md hover:shadow-lg transition-transform duration-300 focus:outline-none focus:ring-4 focus:ring-blue-300"
                         aria-label={actionText}
                       >
                         {actionText}

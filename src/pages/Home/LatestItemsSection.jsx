@@ -2,12 +2,11 @@ import React from "react";
 import { useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { HiLocationMarker, HiCalendar } from "react-icons/hi";
-import { axiosInstance } from "../../api/api"; // use instance
+import { axiosInstance } from "../../api/api";
 
 const LatestItemsSection = () => {
   const navigate = useNavigate();
 
-  // Fetch items using axiosInstance
   const {
     data: items = [],
     isLoading,
@@ -36,8 +35,8 @@ const LatestItemsSection = () => {
   const latestItems = items.slice(0, 6);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h2 className="text-2xl font-bold text-center mb-8 text-gray-800">
+    <div className="container mx-auto px-4 sm:px-6 md:px-8 py-8">
+      <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 text-gray-800">
         Latest Lost & Found Items
       </h2>
 
@@ -62,30 +61,32 @@ const LatestItemsSection = () => {
                 >
                   {item.postType}
                 </span>
-                <span className="text-xs text-gray-500">{item.category}</span>
+                <span className="text-xs text-gray-500 truncate max-w-[50%]">
+                  {item.category}
+                </span>
               </div>
 
               {item.thumbnail && (
                 <img
                   src={item.thumbnail}
                   alt={item.title}
-                  className="w-full h-48 object-cover"
+                  className="w-full h-48 sm:h-56 md:h-60 object-cover"
                 />
               )}
 
-              <div className="p-4 flex-grow">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              <div className="p-4 flex flex-col flex-grow">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 truncate">
                   {item.title}
                 </h3>
-                <p className="text-gray-600 text-sm mb-1 flex items-center">
-                  <HiLocationMarker className="w-4 h-4 mr-1 text-gray-400" />
+                <p className="text-gray-600 text-sm mb-1 flex items-center truncate">
+                  <HiLocationMarker className="w-4 h-4 mr-1 text-gray-400 flex-shrink-0" />
                   {item.location}
                 </p>
                 <p className="text-gray-600 text-sm mb-3 flex items-center">
-                  <HiCalendar className="w-4 h-4 mr-1 text-gray-400" />
+                  <HiCalendar className="w-4 h-4 mr-1 text-gray-400 flex-shrink-0" />
                   {new Date(item.date).toLocaleDateString()}
                 </p>
-                <p className="text-gray-700 text-sm">
+                <p className="text-gray-700 text-sm flex-grow">
                   {item.description?.length > 100
                     ? `${item.description.substring(0, 100)}...`
                     : item.description || "No description provided"}
@@ -94,7 +95,7 @@ const LatestItemsSection = () => {
 
               <button
                 onClick={() => handleViewDetails(item._id)}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 transition-colors duration-200"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 transition-colors duration-200 w-full"
               >
                 View Details
               </button>

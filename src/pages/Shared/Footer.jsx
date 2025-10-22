@@ -8,17 +8,19 @@ import {
   FaPhoneAlt,
   FaEnvelope,
 } from "react-icons/fa";
+import logo from "../../assets/logo.svg";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-gray-300 py-12">
-      <div className="container mx-auto px-6 max-w-6xl">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-start space-y-10 md:space-y-0">
-          {/* Brand and Contact Info */}
-          <aside className="flex flex-col items-center md:items-start text-center md:text-left space-y-4 md:w-1/4">
+    <footer className="bg-gray-800 text-gray-300 py-12 sm:py-16 px-4 sm:px-6 md:px-8">
+      <div className="max-w-5xl mx-auto">
+        {/* Top Section */}
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-12 lg:gap-0">
+          {/* Brand & Contact */}
+          <aside className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-4 lg:w-1/4">
             <div className="flex items-center gap-2">
               <img
-                src="src\assets\logo.svg"
+                src={logo}
                 alt="WhereIsIt Logo"
                 className="w-10 h-10 object-contain"
               />
@@ -45,11 +47,11 @@ const Footer = () => {
             </div>
           </aside>
 
-          {/* Navigation */}
-          <nav className="flex justify-between flex-grow gap-16 md:gap-24">
-            <div>
-              <h6 className="font-semibold text-white mb-5">Quick Links</h6>
-              <ul className="space-y-3 text-sm">
+          {/* Navigation Links */}
+          <nav className="flex flex-col sm:flex-row justify-between flex-grow gap-8 sm:gap-12 lg:gap-16 text-sm text-gray-300">
+            <div className="text-center sm:text-left">
+              <h6 className="font-semibold text-white mb-4">Quick Links</h6>
+              <ul className="space-y-2">
                 <li>
                   <a href="/" className="hover:text-blue-400 transition">
                     Home
@@ -82,9 +84,9 @@ const Footer = () => {
               </ul>
             </div>
 
-            <div>
-              <h6 className="font-semibold text-white mb-5">Support</h6>
-              <ul className="space-y-3 text-sm">
+            <div className="text-center sm:text-left">
+              <h6 className="font-semibold text-white mb-4">Support</h6>
+              <ul className="space-y-2">
                 <li>
                   <a href="/faq" className="hover:text-blue-400 transition">
                     FAQ
@@ -114,9 +116,9 @@ const Footer = () => {
               </ul>
             </div>
 
-            <div>
-              <h6 className="font-semibold text-white mb-5">Legal</h6>
-              <ul className="space-y-3 text-sm">
+            <div className="text-center sm:text-left">
+              <h6 className="font-semibold text-white mb-4">Legal</h6>
+              <ul className="space-y-2">
                 <li>
                   <a href="/terms" className="hover:text-blue-400 transition">
                     Terms of Service
@@ -148,56 +150,36 @@ const Footer = () => {
           </nav>
         </div>
 
-        {/* Bottom Section */}
-        <div className="mt-12 border-t border-gray-700 pt-6 flex flex-col md:flex-row justify-between items-center">
-          {/* Newsletter */}
-          <div className="mb-6 md:mb-0">
-            <h6 className="font-semibold text-white mb-3">
-              Subscribe to our newsletter
-            </h6>
-            <div className="flex">
-              <input
-                type="email"
-                placeholder="Your email"
-                className="px-4 py-2 rounded-l-md focus:outline-none text-gray-800 w-full max-w-xs"
-              />
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r-md transition">
-                Subscribe
-              </button>
-            </div>
-          </div>
-
-          {/* Social Media */}
-          <div className="flex justify-center space-x-6">
-            <a
-              href="#"
-              aria-label="Facebook"
-              className="text-gray-400 hover:text-blue-400 transition"
-            >
-              <FaFacebookF size={20} />
-            </a>
-            <a
-              href="#"
-              aria-label="Twitter"
-              className="text-gray-400 hover:text-blue-300 transition"
-            >
-              <FaTwitter size={20} />
-            </a>
-            <a
-              href="#"
-              aria-label="LinkedIn"
-              className="text-gray-400 hover:text-blue-500 transition"
-            >
-              <FaLinkedinIn size={20} />
-            </a>
-            <a
-              href="#"
-              aria-label="Instagram"
-              className="text-gray-400 hover:text-pink-400 transition"
-            >
-              <FaInstagram size={20} />
-            </a>
-          </div>
+        {/* Social Media */}
+        <div className="mt-12 flex justify-center md:justify-end space-x-4 sm:space-x-6">
+          <a
+            href="#"
+            aria-label="Facebook"
+            className="text-gray-400 hover:text-blue-400 transition"
+          >
+            <FaFacebookF size={22} />
+          </a>
+          <a
+            href="#"
+            aria-label="Twitter"
+            className="text-gray-400 hover:text-blue-300 transition"
+          >
+            <FaTwitter size={22} />
+          </a>
+          <a
+            href="#"
+            aria-label="LinkedIn"
+            className="text-gray-400 hover:text-blue-500 transition"
+          >
+            <FaLinkedinIn size={22} />
+          </a>
+          <a
+            href="#"
+            aria-label="Instagram"
+            className="text-gray-400 hover:text-pink-400 transition"
+          >
+            <FaInstagram size={22} />
+          </a>
         </div>
 
         {/* Copyright */}
